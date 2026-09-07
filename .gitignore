@@ -5,4 +5,5 @@ dist/
 !.env.example
 .evershop/
 media/
+Bd/
 *.log
