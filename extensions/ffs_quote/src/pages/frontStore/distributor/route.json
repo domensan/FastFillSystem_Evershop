@@ -1,0 +1,5 @@
+{
+  "methods": ["GET"],
+  "path": "/distributor",
+  "name": "Become an FFS distributor"
+}

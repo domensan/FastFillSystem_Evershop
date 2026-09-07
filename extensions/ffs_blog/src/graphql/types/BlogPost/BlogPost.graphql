@@ -1,0 +1,19 @@
+type BlogPost {
+  postId: Int!
+  title: String!
+  slug: String!
+  excerpt: String!
+  content: String!
+  image: String
+  category: String!
+  status: String!
+  metaTitle: String
+  metaDescription: String
+  publishedAt: String!
+  url: String!
+}
+
+extend type Query {
+  blogPosts: [BlogPost!]!
+  currentBlogPost: BlogPost
+}

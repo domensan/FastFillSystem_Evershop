@@ -1,0 +1,5 @@
+{
+  "methods": ["PATCH", "DELETE"],
+  "path": "/ffs/blog/posts/:id",
+  "access": "private"
+}

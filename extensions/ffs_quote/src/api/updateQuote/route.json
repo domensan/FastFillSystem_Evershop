@@ -1,0 +1,5 @@
+{
+  "methods": ["PATCH"],
+  "path": "/ffs/quotes/:reference",
+  "access": "private"
+}

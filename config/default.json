@@ -1,0 +1,23 @@
+{
+  "shop": {
+    "language": "en",
+    "currency": "USD"
+  },
+  "system": {
+    "theme": "ffs",
+    "extensions": [
+      {
+        "name": "ffs_quote",
+        "resolve": "extensions/ffs_quote",
+        "enabled": true,
+        "priority": 10
+      },
+      {
+        "name": "ffs_blog",
+        "resolve": "extensions/ffs_blog",
+        "enabled": true,
+        "priority": 11
+      }
+    ]
+  }
+}
