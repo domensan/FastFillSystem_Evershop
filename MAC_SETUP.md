@@ -120,3 +120,19 @@ El arranque de PostgreSQL de la sección anterior corresponde exclusivamente a
 la instalación portátil de este Mac. En otro equipo usar la ruta o servicio de
 su instalación. Los datos privados, dependencias y compilaciones están ignorados
 por Git. Revisar siempre `git status` antes de confirmar cambios.
+
+## Verificación de esta preparación
+
+- `npm ci`: instalación nativa completada, sin copiar dependencias de Windows.
+- `npm run build:custom`: TypeScript y copia de assets completados.
+- EN y ES: arranque de desarrollo, JavaScript servido y renderización en Chrome
+  comprobados sin excepciones JavaScript; selector de idiomas apunta a 3000/3001.
+- Inicio, catálogo, contacto y acceso al login administrativo responden por HTTP.
+- PostgreSQL restaurado: 84 productos y 24 categorías.
+- Imágenes públicas comprobadas por HTTP; `media/` estaba vacío en el respaldo.
+- No se verificaron envíos reales de formularios ni el login con contraseña.
+- La traducción ES de GitHub es parcial: quedan bloques de productos destacados,
+  testimonios y el enlace Contact en inglés. Se conserva el contenido del repo.
+- npm reporta 42 vulnerabilidades (36 moderadas y 6 altas) en las dependencias
+  fijadas por el repositorio. No se ejecutó `npm audit fix` ni se cambió EverShop.
+- El merge y los commits de preparación son locales; no se hizo push a GitHub.
