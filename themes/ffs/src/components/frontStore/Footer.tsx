@@ -7,8 +7,8 @@ export function Footer() {
     <footer className="ffs-footer">
       <div className="page-width ffs-footer__grid">
         <div className="ffs-footer__brand">
-          <span className="ffs-footer__brand-logo">
-            <img src="/ffs/logo.png" alt="Fast Fill Systems" />
+          <span className="ffs-footer__brand-logo" role="img" aria-label="Fast Fill Systems">
+            <span aria-hidden="true">R</span>
           </span>
           <p>{_('Igniting the Future of Fueling with innovative solutions, quality and service.')}</p>
         </div>

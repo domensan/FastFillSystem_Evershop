@@ -1,4 +1,12 @@
 @font-face {
+  font-family: 'Fast Fill Icons';
+  src: url('/ffs/FastFillIcons-Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
   font-family: "Gotham FFS";
   src: url("/ffs/Gotham-Book.otf") format("opentype");
   font-display: swap;
@@ -156,19 +164,16 @@ body { color: var(--ffs-ink); font-family: "Gotham FFS", Arial, sans-serif; }
 .ffs-footer h2 { margin-bottom: 1.2rem; color: #8fb1ce; font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; }
 .ffs-footer nav,
 .ffs-footer address { display: flex; flex-direction: column; gap: .7rem; font-style: normal; }
-.ffs-footer__brand-logo { position: relative; display: block; width: 230px; }
-.ffs-footer__brand-logo img { width: 100%; filter: brightness(0) invert(1); }
-.ffs-footer__brand-logo::after {
-  content: "F";
-  position: absolute;
-  top: 49%;
-  left: 13.8%;
-  color: #0b141c;
-  font-family: Arial, sans-serif;
-  font-size: 2.15rem;
-  font-weight: 900;
-  line-height: 1;
-  transform: translate(-50%, -50%);
+/* Fast Fill Icons maps R to the complete FFS logo (S is the shield). */
+.ffs-footer__brand-logo {
+  display: block;
+  width: 230px;
+  color: white;
+  font-family: 'Fast Fill Icons';
+  font-size: 106px;
+  font-weight: normal;
+  font-style: normal;
+  line-height: 64px;
 }
 .ffs-footer__brand p { max-width: 340px; margin-top: 1.5rem; color: #b9c4cc; line-height: 1.7; }
 .ffs-footer p,
