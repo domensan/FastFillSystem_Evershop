@@ -7,3 +7,7 @@ dist/
 media/
 Bd/
 *.log
+
+# Local Spanish worktree (independent build cache, shared dependencies)
+/ES/
+.DS_Store

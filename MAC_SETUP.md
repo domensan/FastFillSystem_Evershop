@@ -1,199 +1,122 @@
-# Continuar EverShop FFS en un Mac
+# FFS V2 en este Mac
 
-Esta guía permite reconstruir el entorno de desarrollo de Fast Fill Systems en macOS y continuar trabajando con GitHub.
+Actualizado: 8 de septiembre de 2026.
 
-## Qué contiene cada respaldo
+## Versión y organización
 
-El repositorio GitHub contiene el código, el tema, las extensiones y las imágenes públicas:
-
-```text
-https://github.com/domensan/FastFillSystem_Evershop
-```
-
-La copia privada trasladada desde Windows debe contener además:
+GitHub manda: base `4a067ae` de `origin/main` (7 de septiembre de 2026).
+Se compararon las tres copias trasladadas desde Windows: la raíz era antigua;
+el código de `evershopFFS` y `evershopFFS-es` ya coincide con GitHub. No había
+historial `.git` local ni código adicional que fusionar. La preparación de Mac
+se integra mediante la rama `setup/mac-v2` en `main`.
 
 ```text
-.env
-media/
-Bd/evershop_ffs.dump
+EverShop_FFS/
+  FFS_V2/                  Repositorio principal / inglés (main)
+    ES/                    Worktree español (local/es)
+    node_modules/          Una instalación nativa para Mac
+    .env                   Conexión privada a ffs_v2
+    Bd/evershop_ffs.dump    Respaldo original privado
+  .local/
+    Postgres.app/          PostgreSQL 17.11 oficial
+    pgdata/                Datos locales de PostgreSQL
+    postgres.log
 ```
 
-Estos tres elementos no deben subirse a GitHub: contienen configuración, archivos locales y datos de PostgreSQL.
+Las copias antiguas se conservaron como respaldo. Trabajar desde `FFS_V2`.
+`ES` comparte las dependencias mediante un enlace simbólico, pero tiene código
+y caché `.evershop` independientes: EverShop no permite compartir esa caché
+entre dos idiomas ejecutándose simultáneamente.
 
-## 1. Instalar las herramientas
+## Arranque diario
 
-Instalar Xcode Command Line Tools:
+Desde `FFS_V2`, iniciar PostgreSQL si todavía no está ejecutándose:
 
 ```bash
-xcode-select --install
+../.local/Postgres.app/Contents/Versions/17/bin/pg_ctl \
+  -D ../.local/pgdata -l ../.local/postgres.log \
+  -o '-h 127.0.0.1 -p 5432 -k /tmp' start
 ```
 
-Si Homebrew no está instalado, instalarlo desde <https://brew.sh/>. Después instalar Git, Node.js y PostgreSQL 17:
+En una terminal, inglés:
 
 ```bash
-brew install git node postgresql@17
-brew services start postgresql@17
+cd /Users/marketingffs/Desktop/Code/Evershop-FastFillSystems/EverShop_FFS/FFS_V2
+npm run dev:en
 ```
 
-Comprobar la instalación:
+En otra terminal, español:
 
 ```bash
-git --version
-node --version
-npm --version
-psql --version
+cd /Users/marketingffs/Desktop/Code/Evershop-FastFillSystems/EverShop_FFS/FFS_V2/ES
+npm run dev:es
 ```
 
-Si macOS no encuentra los comandos de PostgreSQL, añadirlos al `PATH`:
+- EN: http://localhost:3000 — Admin: http://localhost:3000/admin
+- ES: http://localhost:3001 — Admin: http://localhost:3001/admin
+
+Ambos usan la base `ffs_v2`, restaurada desde el respaldo del 7 de septiembre.
+Cambios de catálogo, blog o cotizaciones afectan a ambos. Los textos del tema
+usan `config/default.json`, `config/es.json` y `translations/en` / `translations/es`.
+La contraseña del administrador sigue siendo la del respaldo; no se reinició.
+Detener cada servidor con Ctrl+C. Para detener PostgreSQL:
 
 ```bash
-echo 'export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
+../.local/Postgres.app/Contents/Versions/17/bin/pg_ctl -D ../.local/pgdata stop
 ```
 
-En un Mac Intel, Homebrew puede usar `/usr/local` en lugar de `/opt/homebrew`. En ese caso ejecutar:
+## Editar y sincronizar EN/ES
+
+Editar el código compartido en la raíz de `FFS_V2`. El modo desarrollo compila
+y observa los archivos automáticamente. Para comprobar TypeScript:
 
 ```bash
-echo 'export PATH="/usr/local/opt/postgresql@17/bin:$PATH"' >> ~/.zshrc
-source ~/.zshrc
+npm run build:custom
 ```
 
-## 2. Obtener el proyecto
-
-Clonar el repositorio:
+Guardar cambios en `main`, detener ES y actualizar su worktree:
 
 ```bash
-git clone https://github.com/domensan/FastFillSystem_Evershop.git
-cd FastFillSystem_Evershop
+git add <archivos-modificados>
+git commit -m "Descripción del cambio"
+git -C ES merge --ff-only main
+cd ES
+npm run dev:es
 ```
 
-Copiar desde el respaldo privado al directorio recién clonado:
+Antes de actualizar ES, revisar `git -C ES status`: guardar cualquier cambio
+hecho allí. No borrar ni sobrescribir trabajo pendiente.
 
-```text
-.env
-media/
-Bd/evershop_ffs.dump
-```
-
-No reemplazar el código del repositorio con una copia antigua. Sólo agregar esos tres elementos privados.
-
-## 3. Instalar dependencias
-
-Desde la raíz del proyecto:
+Para incorporar novedades de GitHub, con ambos servidores detenidos:
 
 ```bash
-npm ci
+git fetch origin
+git merge origin/main
+git -C ES merge --ff-only main
 ```
 
-`node_modules` no se transporta desde Windows: contiene binarios específicos del sistema y se regenera en el Mac.
+Si cambia `package-lock.json`, ejecutar `npm ci` solamente en la raíz.
+**No ejecutar `npm ci` dentro de ES**, porque usa el mismo `node_modules`.
+Para producción local: `npm run build && npm start` en EN, o
+`NODE_CONFIG_ENV=es npm run build` y `NODE_CONFIG_ENV=es PORT=3001 npm start` en ES.
 
-## 4. Restaurar PostgreSQL
+## Reconstruir en otro Mac
 
-Crear el usuario. Cuando se solicite la contraseña, ingresar el mismo valor configurado como `DB_PASSWORD` en `.env`:
+1. Instalar Node compatible con EverShop 2.1.2 (este Mac se verificó con Node 24.20.0).
+2. Instalar PostgreSQL 17 desde https://postgresapp.com/downloads.html o Homebrew.
+3. Clonar GitHub y ejecutar `npm ci`; nunca transportar `node_modules`, `dist` o `.evershop`.
+4. Copiar solamente `.env`, `Bd/` y `media/` del respaldo privado. Configurar
+   credenciales locales y restaurar en una **base nueva**, sin borrar datos existentes.
+5. Crear ES y sus enlaces desde la raíz:
 
 ```bash
-createuser --login --pwprompt evershop_ffs
+git worktree add ES -b local/es main
+ln -s ../node_modules ES/node_modules
+ln -s ../.env ES/.env
+ln -s ../media ES/media
 ```
 
-Crear la base:
-
-```bash
-createdb --owner=evershop_ffs evershop_ffs
-```
-
-Cargar temporalmente la contraseña desde `.env` y restaurar el respaldo:
-
-```bash
-export PGPASSWORD="$(sed -n 's/^DB_PASSWORD=//p' .env | tr -d '\"')"
-pg_restore \
-  --host=localhost \
-  --port=5432 \
-  --username=evershop_ffs \
-  --dbname=evershop_ffs \
-  --no-owner \
-  --no-privileges \
-  Bd/evershop_ffs.dump
-unset PGPASSWORD
-```
-
-Si la base ya existe y se necesita repetir la restauración, eliminarla y crearla nuevamente antes de ejecutar `pg_restore`. Confirmar siempre que no contenga trabajo nuevo antes de borrarla.
-
-## 5. Levantar EverShop
-
-Modo desarrollo:
-
-```bash
-npm run dev
-```
-
-Abrir:
-
-```text
-Web:   http://localhost:3000
-Admin: http://localhost:3000/admin
-```
-
-Para comprobar una compilación de producción:
-
-```bash
-npm run build
-npm start
-```
-
-## 6. Flujo diario con Git
-
-Antes de comenzar:
-
-```bash
-git switch main
-git pull --ff-only
-git status
-```
-
-Después de trabajar:
-
-```bash
-git status
-git add .
-git commit -m "Describe brevemente el cambio"
-git push
-```
-
-Nunca confirmar ni subir:
-
-```text
-.env
-Bd/
-media/
-node_modules/
-.evershop/
-dist/
-```
-
-Antes de cada commit conviene revisar `git status` y confirmar que ninguno de esos elementos aparezca entre los archivos preparados.
-
-## 7. Archivos importantes del proyecto
-
-```text
-config/                    Configuración de EverShop
-extensions/ffs_quote/      Solicitudes de cotización y personalización del admin
-extensions/ffs_blog/       Blog público y administración de artículos
-themes/ffs/                Tema de la web pública
-public/ffs/                Logos e imágenes públicas
-media/                     Archivos locales asociados a datos de EverShop
-scripts/import-mvp.mjs     Importador inicial del catálogo
-PROJECT_HANDOFF.md         Resumen funcional y decisiones del proyecto
-```
-
-## 8. Si algo falla
-
-Comprobar primero:
-
-```bash
-git status
-node --version
-psql --version
-brew services list
-```
-
-Verificar que `.env` exista en la raíz y que `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` y `DB_PASSWORD` correspondan a la base restaurada. No pegar el contenido completo de `.env` en chats, issues o commits.
+El arranque de PostgreSQL de la sección anterior corresponde exclusivamente a
+la instalación portátil de este Mac. En otro equipo usar la ruta o servicio de
+su instalación. Los datos privados, dependencias y compilaciones están ignorados
+por Git. Revisar siempre `git status` antes de confirmar cambios.

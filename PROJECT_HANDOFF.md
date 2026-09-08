@@ -1,6 +1,11 @@
 # Fast Fill Systems — EverShop: documento de continuidad
 
-Última actualización: 29 de julio de 2026.
+Documento histórico del MVP: 29 de julio de 2026.
+
+**Entorno vigente (8 de septiembre de 2026):** consultar [MAC_SETUP.md](MAC_SETUP.md).
+V2 ya es un repositorio Git y soporta EN/ES; las rutas de Windows y los pasos
+de creación inicial de Git que siguen son referencias históricas. El build actual
+copia rutas y SCSS automáticamente.
 
 Este archivo resume el estado del MVP local para poder retomar el trabajo sin depender del historial del chat.
 
