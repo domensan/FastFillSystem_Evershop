@@ -31,7 +31,7 @@ export const DefaultMiniCartDropdown = ({
   <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
     <SheetContent side={dropdownPosition} className="w-full md:w-1/3 border-border">
       <SheetHeader className="border-b border-border">
-        <SheetTitle className="font-medium text-xl">{_('My Quote')}</SheetTitle>
+        <SheetTitle className="font-medium text-xl">{_('My Quote List')}</SheetTitle>
       </SheetHeader>
       {!cart?.totalQty ? (
         <DefaultMiniCartDropdownEmpty setIsDropdownOpen={() => onClose()} />
@@ -55,7 +55,7 @@ export const DefaultMiniCartDropdown = ({
                       <p className="font-semibold text-sm">{item.productName}</p>
                       <p className="text-xs text-muted-foreground">SKU: {item.productSku}</p>
                       <button className="text-sm text-critical mt-2" onClick={() => onRemoveItem(item.cartItemId)}>
-                        {_('Remove')}
+                        {_('Remove from list')}
                       </button>
                     </div>
                   </li>
@@ -64,7 +64,7 @@ export const DefaultMiniCartDropdown = ({
             )}
           </CartItems>
           <Button size="lg" className="w-full mb-4" onClick={() => { window.location.href = cartUrl; }}>
-            {_('VIEW MY QUOTE')} ({cart.totalQty})
+            {_('REVIEW QUOTE REQUEST')} ({cart.totalQty})
           </Button>
         </div>
       )}

@@ -11,8 +11,8 @@ export function ProductSingleForm() {
 
   return (
     <div className="ffs-product-quote">
-      <p className="ffs-kicker">{_('Pricing')}</p>
-      <h2>{_('Ask for a quote')}</h2>
+      <p className="ffs-kicker">{_('Product Inquiry')}</p>
+      <h2>{_('Build your quote')}</h2>
       <div className="ffs-product-quote__quantity">
         <label htmlFor="quote-qty">{_('Quantity')}</label>
         <input id="quote-qty" type="number" min="1"
@@ -25,7 +25,7 @@ export function ProductSingleForm() {
             disabled={!state.canAddToCart}
             isLoading={state.isLoading}
             onClick={() => actions.addToCart()}>
-            {isInStock ? _('ADD TO QUOTE') : _('UNAVAILABLE')}
+            {isInStock ? _('ADD TO QUOTE LIST') : _('UNAVAILABLE')}
           </Button>
         )}
       </AddToCart>

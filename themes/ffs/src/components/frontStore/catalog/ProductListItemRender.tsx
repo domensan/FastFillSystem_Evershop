@@ -29,7 +29,7 @@ export const ProductListItemRender = ({ product, imageWidth = 300, imageHeight =
       {(state, actions) => (
         <Button className="w-full mt-4" disabled={!state.canAddToCart || state.isLoading}
           onClick={() => actions.addToCart()}>
-          {state.isLoading ? _('ADDING…') : _('ADD TO QUOTE')}
+          {state.isLoading ? _('ADDING…') : _('ADD TO QUOTE LIST')}
         </Button>
       )}
     </AddToCart>

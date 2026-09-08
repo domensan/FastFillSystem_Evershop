@@ -41,6 +41,11 @@ body { color: var(--ffs-ink); font-family: "Gotham FFS", Arial, sans-serif; }
 }
 .ffs-nav a { text-decoration: none; }
 .ffs-mobile-nav { display: none; }
+.ffs-quote-trigger { position: relative; display: inline-flex; min-height: 42px; align-items: center; gap: .45rem; padding: .45rem .65rem; color: #111820; font-size: .7rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+.ffs-quote-trigger:hover { color: var(--ffs-blue); }
+.ffs-quote-trigger strong { display: inline-flex; min-width: 1.3rem; height: 1.3rem; align-items: center; justify-content: center; border-radius: 50%; background: var(--ffs-blue); color: white; font-size: .68rem; }
+.ffs-quote-trigger__spinner { width: 1rem; height: 1rem; border: 2px solid #cbd3d9; border-top-color: var(--ffs-blue); border-radius: 50%; animation: ffs-spin .8s linear infinite; }
+@keyframes ffs-spin { to { transform: rotate(360deg); } }
 .ffs-hero {
   min-height: 650px;
   display: flex;
@@ -403,6 +408,9 @@ body { color: var(--ffs-ink); font-family: "Gotham FFS", Arial, sans-serif; }
   box-shadow: 0 0 0 3px rgba(86, 133, 173, .2);
 }
 .ffs-quote-form .form-field:invalid:not(:placeholder-shown) { border-color: #c94b4b; }
+.ffs-required-quantity { display: inline-grid; grid-template-columns: auto 2rem 2rem 2rem; align-items: center; border: 1px solid #cbd3d9; color: #58656e; font-size: .72rem; text-transform: uppercase; }
+.ffs-required-quantity > span { padding: .45rem .65rem; }
+.ffs-required-quantity button, .ffs-required-quantity strong { display: flex; min-height: 2rem; align-items: center; justify-content: center; border-left: 1px solid #cbd3d9; color: #111820; }
 .ffs-category-page {
   min-height: 850px;
   padding: 5rem 1.5rem 8rem;
