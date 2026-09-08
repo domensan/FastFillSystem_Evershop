@@ -5,9 +5,9 @@ import { getConnection } from '@evershop/evershop/lib/postgres';
 export default async (request, response) => {
   const {
     name, company, email, phone, address1, address2 = '', city,
-    country, province, postcode, message = '', items
+    country, message = '', items
   } = request.body ?? {};
-  if (![name, company, email, phone, address1, city, country, province, postcode].every((value) => value?.trim())
+  if (![name, company, email, phone, address1, city, country].every((value) => value?.trim())
     || !Array.isArray(items) || items.length === 0) {
     return response.status(400).json({ error: 'Contact, address, and products are required.' });
   }
@@ -28,8 +28,6 @@ export default async (request, response) => {
       address_2: String(address2).trim(),
       city: city.trim(),
       country: country.trim(),
-      province: province.trim(),
-      postcode: postcode.trim(),
       message: String(message).trim(),
       items
     }).execute(connection);
@@ -38,11 +36,11 @@ export default async (request, response) => {
       <p><strong>Customer:</strong> {{name}} — {{company}}</p>
       <p><strong>Email:</strong> {{email}}</p>
       <p><strong>Telephone:</strong> {{phone}}</p>
-      <p><strong>Address:</strong> {{address1}}{{#if address2}}, {{address2}}{{/if}}, {{city}}, {{province}} {{postcode}}, {{country}}</p>
+      <p><strong>Address:</strong> {{address1}}{{#if address2}}, {{address2}}{{/if}}, {{city}}, {{country}}</p>
       <ul>{{#each items}}<li>{{qty}} × {{name}} ({{sku}})</li>{{/each}}</ul>
       {{#if message}}<p><strong>Comments:</strong> {{message}}</p>{{/if}}
     `;
-    const data = { reference, name, company, email, phone, address1, address2, city, country, province, postcode, items, message };
+    const data = { reference, name, company, email, phone, address1, address2, city, country, items, message };
     const notifications = [
       sendEmail('ffs_quote_customer', {
         to: email,

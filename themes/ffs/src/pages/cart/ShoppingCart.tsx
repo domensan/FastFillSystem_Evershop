@@ -18,7 +18,6 @@ import { _ } from '@evershop/evershop/lib/locale/translate/_';
 type Country = {
   code: string;
   name: string;
-  provinces: Array<{ code: string; name: string }>;
 };
 
 export default function ShoppingCart({ saveApi, countries }: { saveApi: string; countries: Country[] }) {
@@ -27,7 +26,6 @@ export default function ShoppingCart({ saveApi, countries }: { saveApi: string; 
   const [country, setCountry] = React.useState('');
   const [draft, setDraft] = React.useState<Record<string, string>>({});
   const [draftReady, setDraftReady] = React.useState(false);
-  const provinces = countries.find(({ code }) => code === country)?.provinces ?? [];
 
   React.useEffect(() => {
     try {
@@ -125,22 +123,6 @@ export default function ShoppingCart({ saveApi, countries }: { saveApi: string; 
                     {countries.map(({ code, name }) => <option key={code} value={code}>{name}</option>)}
                   </select>
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <label className="block">{_('Province')} <span className="text-critical">*</span>
-                    {provinces.length ? (
-                      <select className="form-field mt-2" name="province" key={country} defaultValue={draft.province} required>
-                        <option value="">{_('Province')}</option>
-                        {provinces.map(({ code, name }) => <option key={code} value={code}>{name}</option>)}
-                      </select>
-                    ) : (
-                      <input className="form-field mt-2" name="province" key={country}
-                        placeholder={_('Province')} defaultValue={draft.province} required />
-                    )}
-                  </label>
-                  <label className="block">{_('Postcode')} <span className="text-critical">*</span>
-                    <input className="form-field mt-2" name="postcode" placeholder={_('Postcode')} defaultValue={draft.postcode} required />
-                  </label>
-                </div>
                 <label className="block">{_('Application or Comments')}<textarea className="form-field mt-2" name="message" rows={5} defaultValue={draft.message} /></label>
                 {status.error && <p role="alert" className="text-critical">{status.error}</p>}
                 <Button type="submit" className="w-full" size="xl" disabled={status.loading}>
@@ -208,7 +190,6 @@ export const query = `
     countries: allowedCountries {
       code
       name
-      provinces { code name }
     }
   }
 `;
