@@ -52,7 +52,7 @@ export default function Contact() {
         </div>
       </section>
 
-      <section id="contact-form" className="ffs-distributor-form page-width">
+      <section className="ffs-distributor-form page-width">
         <div className="ffs-distributor-form__intro ffs-reveal">
           <p className="ffs-kicker">{_('Get in Touch')}</p>
           <h2>{_('Drop Us a Line!')}</h2>
@@ -67,13 +67,13 @@ export default function Contact() {
         </div>
 
         {status.reference ? (
-          <div className="ffs-distributor-success ffs-reveal">
+          <div id="contact-form" className="ffs-distributor-success ffs-reveal">
             <p className="ffs-kicker">{_('Message Received')}</p>
             <h2>{_('Thank You')}</h2>
             <p>{_('Our team will contact you soon. Your reference is')} <strong>{status.reference}</strong>.</p>
           </div>
         ) : (
-          <form className="ffs-distributor-form__fields ffs-reveal" onSubmit={submit}>
+          <form id="contact-form" className="ffs-distributor-form__fields ffs-reveal" onSubmit={submit}>
             <div><label>{_('First Name')}<input name="firstName" required /></label><label>{_('Last Name')}<input name="lastName" required /></label></div>
             <div><label>{_('Phone')}<input type="tel" name="phone" /></label><label>{_('Email')}<input type="email" name="email" required /></label></div>
             <label>{_('Message')}<textarea name="message" placeholder={_('Tell us the part number, quantity, or previous order you want to repeat.')} rows={7} required /></label>
