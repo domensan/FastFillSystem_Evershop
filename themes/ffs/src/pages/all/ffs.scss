@@ -730,3 +730,28 @@ body.frontStore :is(h1, h2, h3, h4, h5, h6) {
   .ffs-article-layout { grid-template-columns: 1fr; padding-bottom: 5rem; }
   .ffs-article-recent { position: static; }
 }
+
+/* Fuel Nozzles follows the original category artwork and open product grid. */
+.ffs-category-page--nozzles {
+  padding: 0 0 5rem;
+  background: #030303 url('/ffs/home/catalog-lines.png') center top / 1440px auto repeat-y;
+}
+.ffs-category-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  margin-bottom: 3rem;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  background: linear-gradient(rgba(0,0,0,.4), rgba(0,0,0,.4)), url('/ffs/home/fuel-nozzles-hero.jpg') center / cover;
+}
+.ffs-category-page--nozzles .ffs-category-layout { padding-inline: 1.5rem; gap: 2rem; }
+.ffs-category-page--nozzles .product__list__item__inner { padding: 0; border: 0; background: transparent; }
+.ffs-category-page--nozzles .product__list__item__inner > a > div:first-child { border: 2px solid #62666b; border-radius: 6px; background: #08090b; }
+.ffs-category-page--nozzles .product__list__item__inner img { mix-blend-mode: normal; }
+.ffs-category-page--nozzles .product__list__item__inner h2 { font-size: 1.3rem; line-height: 1.3; text-align: center; }
+.ffs-category-page--nozzles .product__list__item__inner p { text-align: center; }
+@media (max-width: 767px) {
+  .ffs-category-banner { min-height: 260px; margin-bottom: 2rem; }
+}

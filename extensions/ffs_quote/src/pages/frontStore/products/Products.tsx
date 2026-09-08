@@ -17,11 +17,9 @@ const categoryChildren = {
   Pressureless: ['High Flow Pressureless', 'Parts', 'Small Tank Pressureless']
 };
 
-export default function Products({ products, searchUrl }) {
-  const categories = new Map();
-  products.items.forEach((product) => {
-    if (product.category) categories.set(product.category.name, product.category.url);
-  });
+export default function Products({ categories, searchUrl }) {
+  const categoryUrls = new Map(categories.items.map((item) => [item.name, item.url]));
+  const nozzleRoot = categories.items.find((item) => item.name === 'Fuel Nozzles');
 
   function search(event) {
     event.preventDefault();
@@ -49,7 +47,8 @@ export default function Products({ products, searchUrl }) {
                 <summary><a href={url}>{_(name)}</a></summary>
                 <div>
                   {(categoryChildren[name] || []).map((child) => (
-                    <a key={`${name}-${child}`} href={categories.get(child) || url}>{_(child)}</a>
+                    <a key={`${name}-${child}`} href={(name === 'Fuel Nozzles' && categories.items.find((item) =>
+                      item.parent?.categoryId === nozzleRoot?.categoryId && item.name === child)?.url) || categoryUrls.get(child) || url}>{_(child)}</a>
                   ))}
                 </div>
               </details>
@@ -74,16 +73,9 @@ export const layout = { areaId: 'content', sortOrder: 10 };
 
 export const query = `
   query ProductsPage {
-    products(filters: [{ key: "limit", operation: eq, value: "100" }]) {
-      items { ...CategoryProduct }
+    categories(filters: [{ key: "limit", operation: eq, value: "100" }]) {
+      items { categoryId parent { categoryId } name url }
     }
     searchUrl: url(routeId: "catalogSearch")
-  }
-`;
-
-export const fragments = `
-  fragment CategoryProduct on Product {
-    productId
-    category { name url }
   }
 `;

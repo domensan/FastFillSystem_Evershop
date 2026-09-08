@@ -136,3 +136,33 @@ por Git. Revisar siempre `git status` antes de confirmar cambios.
 - npm reporta 42 vulnerabilidades (36 moderadas y 6 altas) en las dependencias
   fijadas por el repositorio. No se ejecutó `npm audit fix` ni se cambió EverShop.
 - El merge y los commits de preparación son locales; no se hizo push a GitHub.
+
+## Conciliación de Fuel Nozzles (8 de septiembre de 2026)
+
+La categoría original muestra 13 fichas; el MVP mostraba 5 porque no conservó
+la jerarquía de categorías y omitió Pitboss (SKU web `001`) y Sureloc 1000
+(SKU web `001-3-2`). La base local ya fue conciliada. Respaldo anterior:
+`Bd/before-fuel-nozzles.dump`.
+
+Para aplicar el mismo ajuste después de restaurar el dump original, desde EN:
+
+```bash
+node scripts/sync-fuel-nozzles.mjs
+```
+
+El script usa una transacción y comprueba las 13 fichas antes de confirmar.
+Conserva productos existentes y separa Parts de Fuel Nozzles de los demás
+repuestos. Se puede repetir sin duplicar las dos fichas agregadas.
+EN y ES comparten estos datos. El código y los assets sí deben sincronizarse
+con `git -C ES merge --ff-only main`.
+
+Fuentes de los recursos:
+- Página: https://www.fastfillsystems.com/cat/fuel-nozzles/
+- Cabecera: https://www.fastfillsystems.com/wp-content/uploads/2024/03/Pitboss.jpg
+- Fondo: https://www.fastfillsystems.com/wp-content/uploads/2024/03/New-BG-Lines.png
+- Pitboss: https://www.fastfillsystems.com/wp-content/uploads/2024/03/N150PB.png
+- Sureloc 1000: https://www.fastfillsystems.com/wp-content/uploads/2024/03/N1000PSL.png
+
+La original presenta dos fichas cuyo nombre refiere a N1000PSLp. Se conservaron
+como fichas distintas, con sus SKU web originales. No se importaron precios
+de relleno ni se afirmó equivalencia técnica entre ambas.

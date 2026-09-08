@@ -21,11 +21,14 @@ export default function CategoryView({
   searchUrl
 }: {
   category: CategoryData;
-  categories: { items: Array<{ category: { name: string; url: string } }> };
+  categories: { items: Array<{ name: string; url: string; parent: { categoryId: number } | null; categoryId: number }> };
   searchUrl: string;
 }) {
-  const categoryUrls = new Map(categories.items.map(({ category }) => [category.name.toLowerCase(), category.url]));
+  const categoryUrls = new Map(categories.items.map((item) => [item.name.toLowerCase(), item.url]));
   const currentName = category.name.toLowerCase();
+
+  const nozzleRoot = categories.items.find((item) => item.name === 'Fuel Nozzles');
+  const isNozzles = currentName === 'fuel nozzles';
 
   function search(event) {
     event.preventDefault();
@@ -35,10 +38,10 @@ export default function CategoryView({
 
   return (
     <CategoryProvider category={category}>
-      <main className="ffs-category-page">
-        <header className="ffs-category-title page-width">
-          <p className="ffs-kicker">Fast Fill Systems</p>
-          <h1>{category.name}</h1>
+      <main className={`ffs-category-page${isNozzles ? ' ffs-category-page--nozzles' : ''}`}>
+        <header className={`ffs-category-title ${isNozzles ? 'ffs-category-banner' : 'page-width'}`}>
+          {!isNozzles && <p className="ffs-kicker">Fast Fill Systems</p>}
+          <h1>{_(category.name)}</h1>
         </header>
         <div className="ffs-category-layout page-width">
         <aside className="ffs-category-sidebar ffs-products-sidebar">
@@ -63,7 +66,9 @@ export default function CategoryView({
                   </summary>
                   <div>
                     {children.map((child) => {
-                      const url = categoryUrls.get(child.toLowerCase()) ||
+                      const nozzleChild = parent === 'Fuel Nozzles' && categories.items.find((item) =>
+                        item.parent?.categoryId === nozzleRoot?.categoryId && item.name.toLowerCase() === child.toLowerCase());
+                      const url = (nozzleChild && nozzleChild.url) || categoryUrls.get(child.toLowerCase()) ||
                         categoryUrls.get(parent.toLowerCase()) || '/products';
                       return (
                         <a key={`${parent}-${child}`} href={url}
@@ -104,16 +109,14 @@ export const query = `
       uuid
       description
       image { alt url }
-      products {
+      products(filters: [{ key: "limit", operation: eq, value: "24" }, { key: "ob", operation: eq, value: "name" }, { key: "od", operation: eq, value: "ASC" }]) {
         items { ...CategoryProduct }
         currentFilters { key operation value }
         total
       }
     }
-    categories: products(filters: [{ key: "limit", operation: eq, value: "100" }]) {
-      items {
-        category { name url }
-      }
+    categories(filters: [{ key: "limit", operation: eq, value: "100" }]) {
+      items { categoryId parent { categoryId } name url }
     }
     searchUrl: url(routeId: "catalogSearch")
   }
