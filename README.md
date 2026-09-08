@@ -1,11 +1,11 @@
-# EverShop FFS
+# Fast Fill Systems — V2
 
-Tienda local de Fast Fill Systems orientada a solicitudes de cotización.
+EverShop 2.1.2 con tema FFS, catálogo, cotizaciones y blog en inglés/español.
 
-## Inicio
+La guía vigente del entorno local y del flujo EN/ES está en [MAC_SETUP.md](MAC_SETUP.md).
 
-1. Crear una base PostgreSQL vacía.
-2. Ejecutar `npm run setup`.
-3. Ejecutar `npm run dev`.
+- Inglés: `npm run dev:en` → http://localhost:3000
+- Español, desde el worktree `ES`: `npm run dev:es` → http://localhost:3001
+- Verificación del tema y extensiones: `npm run build:custom`
 
-Para migrar el entorno desde Windows y continuar trabajando en macOS, consultar [`MAC_SETUP.md`](./MAC_SETUP.md).
+Base sincronizada con GitHub: `4a067ae` (7 de septiembre de 2026).

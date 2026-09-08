@@ -8,7 +8,9 @@
     "dev": "evershop dev",
     "build:custom": "tsc -p extensions/ffs_quote/tsconfig.json && tsc -p extensions/ffs_blog/tsconfig.json && tsc -p themes/ffs/tsconfig.json && node scripts/copy-build-assets.mjs",
     "build": "npm run build:custom && evershop build",
-    "start": "evershop start"
+    "start": "evershop start",
+    "dev:en": "NODE_CONFIG_ENV=default PORT=3000 evershop dev",
+    "dev:es": "NODE_CONFIG_ENV=es PORT=3001 evershop dev"
   },
   "dependencies": {
     "@evershop/evershop": "2.1.2"
