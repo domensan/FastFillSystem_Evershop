@@ -30,19 +30,24 @@ export default function Contact() {
   }
 
   return (
-    <main className="ffs-distributor-page">
-      <section className="ffs-distributor-hero">
-        <div className="page-width">
-          <div className="ffs-distributor-hero__copy ffs-reveal">
+    <main className="ffs-contact-page">
+      <section className="ffs-contact-hero">
+        <div className="ffs-contact-hero__video" aria-hidden="true">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/WvZ1eB_dE-8?autoplay=1&mute=1&loop=1&playlist=WvZ1eB_dE-8&controls=0&modestbranding=1&playsinline=1&rel=0"
+            title=""
+            allow="autoplay; encrypted-media"
+            tabIndex={-1}
+          />
+        </div>
+        <div className="ffs-contact-hero__overlay" />
+        <div className="page-width ffs-contact-hero__content">
+          <div className="ffs-reveal">
             <p className="ffs-kicker">Get in Touch</p>
             <h1>Contact Us</h1>
             <p>Contact Fast Fill Systems to learn how our advanced fueling solutions can support your operation. We’re here to answer questions and help fuel your success.</p>
             <a className="ffs-button ffs-button--primary" href="#contact-form">Drop Us a Line</a>
             <a className="ffs-distributor-phone" href="tel:+18014913600">+1 801-491-3600</a>
-          </div>
-          <div className="ffs-distributor-hero__visual ffs-reveal">
-            <img src="/ffs/home/distributor-system.jpg" alt="Fast Fill Systems fueling equipment" />
-            <img src="/ffs/home/distributor-receiver.jpg" alt="Fast Fill Systems fuel receiver" />
           </div>
         </div>
       </section>

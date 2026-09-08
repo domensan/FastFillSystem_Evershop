@@ -550,6 +550,15 @@ body { color: var(--ffs-ink); font-family: "Gotham FFS", Arial, sans-serif; }
 .ffs-distributor-form__fields .ffs-button { align-self: flex-start; border: 0; }
 .ffs-distributor-success { padding: clamp(3rem, 7vw, 6rem); background: #f0f2f3; }
 .ffs-distributor-success > p:last-child { margin-top: 1.5rem; color: #64717a; line-height: 1.8; }
+.ffs-contact-page { background: white; }
+.ffs-contact-hero { position: relative; display: flex; min-height: min(760px, 78vh); align-items: center; overflow: hidden; background: #071119; color: white; }
+.ffs-contact-hero__video, .ffs-contact-hero__overlay { position: absolute; inset: 0; }
+.ffs-contact-hero__video iframe { position: absolute; top: 50%; left: 50%; width: max(100vw, 177.78vh); height: max(56.25vw, 100vh); border: 0; transform: translate(-50%, -50%); pointer-events: none; }
+.ffs-contact-hero__overlay { background: linear-gradient(90deg, rgba(4, 12, 18, .94) 0%, rgba(4, 12, 18, .74) 48%, rgba(4, 12, 18, .26) 100%); }
+.ffs-contact-hero__content { position: relative; z-index: 1; width: 100%; padding-top: 8rem; padding-bottom: 8rem; }
+.ffs-contact-hero__content > div { max-width: 720px; }
+.ffs-contact-hero h1 { font-size: clamp(3.5rem, 8vw, 7.5rem); font-weight: 900; line-height: .9; text-transform: uppercase; }
+.ffs-contact-hero__content > div > p:not(.ffs-kicker) { max-width: 650px; margin: 1.5rem 0 2rem; color: #d4dce2; font-size: 1.05rem; line-height: 1.8; }
 .ffs-updates-hero {
   min-height: 460px;
   display: flex;
@@ -683,6 +692,9 @@ body { color: var(--ffs-ink); font-family: "Gotham FFS", Arial, sans-serif; }
   .ffs-distributor-form { padding-top: 5rem; padding-bottom: 5rem; }
   .ffs-distributor-form__intro { position: static; }
   .ffs-distributor-form__fields > div { grid-template-columns: 1fr; }
+  .ffs-contact-hero { min-height: 650px; }
+  .ffs-contact-hero__overlay { background: rgba(4, 12, 18, .76); }
+  .ffs-contact-hero__content { padding-top: 6rem; padding-bottom: 6rem; }
   .ffs-updates-hero { min-height: 390px; }
   .ffs-updates-grid { grid-template-columns: 1fr; padding-top: 5rem; padding-bottom: 5rem; }
   .ffs-update-card--featured { grid-column: auto; grid-template-columns: 1fr; }
