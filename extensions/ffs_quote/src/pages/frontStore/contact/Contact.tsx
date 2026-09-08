@@ -1,4 +1,5 @@
 import React from 'react';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 
 export default function Contact() {
   const [status, setStatus] = React.useState({ loading: false, reference: '', error: '' });
@@ -13,19 +14,18 @@ export default function Contact() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: `${values.firstName} ${values.lastName}`.trim(),
-          company: '',
+          requestType: 'contact',
           email: values.email,
           phone: values.phone,
-          message: values.message,
-          items: [{ sku: 'CONTACT', name: 'Contact inquiry', qty: 1 }]
+          message: values.message
         })
       });
       const result = await response.json();
       setStatus(response.ok
         ? { loading: false, reference: result.reference, error: '' }
-        : { loading: false, reference: '', error: result.error || 'We could not send your message.' });
+        : { loading: false, reference: '', error: result.error || _('We could not send your message.') });
     } catch {
-      setStatus({ loading: false, reference: '', error: 'We could not connect to the server.' });
+      setStatus({ loading: false, reference: '', error: _('We could not connect to the server.') });
     }
   }
 
@@ -43,10 +43,10 @@ export default function Contact() {
         <div className="ffs-contact-hero__overlay" />
         <div className="page-width ffs-contact-hero__content">
           <div className="ffs-reveal">
-            <p className="ffs-kicker">Get in Touch</p>
-            <h1>Contact Us</h1>
-            <p>Contact Fast Fill Systems to learn how our advanced fueling solutions can support your operation. We’re here to answer questions and help fuel your success.</p>
-            <a className="ffs-button ffs-button--primary" href="#contact-form">Drop Us a Line</a>
+            <p className="ffs-kicker">{_('Get in Touch')}</p>
+            <h1>{_('Contact Us')}</h1>
+            <p>{_('Contact Fast Fill Systems to learn how our advanced fueling solutions can support your operation. We’re here to answer questions and help fuel your success.')}</p>
+            <a className="ffs-button ffs-button--primary" href="#contact-form">{_('Drop Us a Line')}</a>
             <a className="ffs-distributor-phone" href="tel:+18014913600">+1 801-491-3600</a>
           </div>
         </div>
@@ -54,32 +54,32 @@ export default function Contact() {
 
       <section id="contact-form" className="ffs-distributor-form page-width">
         <div className="ffs-distributor-form__intro ffs-reveal">
-          <p className="ffs-kicker">Get in Touch</p>
-          <h2>Drop Us a Line!</h2>
-          <p>Ready to enhance your fueling operations? Reach out for inquiries, quotes, or to learn more about what Fast Fill Systems can do for you.</p>
+          <p className="ffs-kicker">{_('Get in Touch')}</p>
+          <h2>{_('Drop Us a Line!')}</h2>
+          <p>{_('Ready to enhance your fueling operations? Reach out for inquiries, quotes, or to learn more about what Fast Fill Systems can do for you.')}</p>
           <div>
-            <strong>Contact Information</strong>
+            <strong>{_('Contact Information')}</strong>
             <span>1195 Spring Creek Pl, Springville, UT 84663</span>
             <span><a href="mailto:contact@fastfillsystems.com">contact@fastfillsystems.com</a></span>
             <span><a href="tel:+18014913600">+1 801-491-3600</a></span>
-            <span>Mon–Thu: 8 AM–5 PM · Fri: 8 AM–3 PM (MST/MDT)</span>
+            <span>{_('Mon–Thu: 8 AM–5 PM · Fri: 8 AM–3 PM (MST/MDT)')}</span>
           </div>
         </div>
 
         {status.reference ? (
           <div className="ffs-distributor-success ffs-reveal">
-            <p className="ffs-kicker">Message Received</p>
-            <h2>Thank You</h2>
-            <p>Our team will contact you soon. Your reference is <strong>{status.reference}</strong>.</p>
+            <p className="ffs-kicker">{_('Message Received')}</p>
+            <h2>{_('Thank You')}</h2>
+            <p>{_('Our team will contact you soon. Your reference is')} <strong>{status.reference}</strong>.</p>
           </div>
         ) : (
           <form className="ffs-distributor-form__fields ffs-reveal" onSubmit={submit}>
-            <div><label>First Name<input name="firstName" required /></label><label>Last Name<input name="lastName" required /></label></div>
-            <div><label>Phone<input type="tel" name="phone" /></label><label>Email<input type="email" name="email" required /></label></div>
-            <label>Message<textarea name="message" rows={7} required /></label>
+            <div><label>{_('First Name')}<input name="firstName" required /></label><label>{_('Last Name')}<input name="lastName" required /></label></div>
+            <div><label>{_('Phone')}<input type="tel" name="phone" /></label><label>{_('Email')}<input type="email" name="email" required /></label></div>
+            <label>{_('Message')}<textarea name="message" placeholder={_('Tell us the part number, quantity, or previous order you want to repeat.')} rows={7} required /></label>
             {status.error && <p role="alert" className="text-critical">{status.error}</p>}
             <button className="ffs-button ffs-button--primary" disabled={status.loading}>
-              {status.loading ? 'SENDING…' : 'SEND'}
+              {status.loading ? _('SENDING…') : _('SEND')}
             </button>
           </form>
         )}

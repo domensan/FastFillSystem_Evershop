@@ -38,3 +38,23 @@ test('quote accepts the remaining fields and still requires city and products', 
     assert.equal(saved, undefined);
   }
 });
+
+
+test('direct contact accepts a message without address or selected products', async () => {
+  const body = { requestType: 'contact', name: 'Test', email: 'test@example.com', message: 'Repeat order: 2 couplers' };
+  const response = {
+    status(code) { this.code = code; return this; },
+    json(data) { this.data = data; return this; }
+  };
+  await createQuote({ body }, response);
+  assert.equal(response.code, 201);
+  assert.equal(saved.message, body.message);
+  assert.equal(saved.company, '');
+  assert.equal(saved.items[0].sku, 'CONTACT');
+  for (const invalid of [{ ...body, message: '' }, { ...body, email: 'invalid' }, { ...body, name: null }]) {
+    saved = undefined;
+    await createQuote({ body: invalid }, response);
+    assert.equal(response.code, 400);
+    assert.equal(saved, undefined);
+  }
+});

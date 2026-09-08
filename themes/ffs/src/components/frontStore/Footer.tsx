@@ -20,7 +20,7 @@ export function Footer() {
             <a href="/about">{_('About Us')}</a>
             <a href="/updates">{_('Updates')}</a>
             <a href="/distributor">{_('Distributor')}</a>
-            <a href="/cart">{_('Request a Quote')}</a>
+            <a href="/contact#contact-form">{_('Request a Quote')}</a>
           </nav>
         </div>
         <div>

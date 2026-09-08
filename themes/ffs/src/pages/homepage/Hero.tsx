@@ -22,7 +22,7 @@ export default function Hero() {
           <p>{_('Fast Fill Systems delivers fast-fill fueling technology for mining, construction, agriculture, bus fleets, rail, and heavy industrial equipment. Fuel faster, safer, and more efficiently.')}</p>
           <div className="ffs-home-actions">
             <a className="ffs-button ffs-button--primary" href="/products">{_('View Products')}</a>
-            <a className="ffs-button ffs-button--outline" href="/cart">{_('Request a Quote')}</a>
+            <a className="ffs-button ffs-button--outline" href="/contact#contact-form">{_('Request a Quote')}</a>
           </div>
         </div>
         <img className="ffs-home-hero__badge" src="/ffs/home/badge.png" alt="Fast Fill Systems — over 30 years" />
