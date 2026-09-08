@@ -1,4 +1,12 @@
 @font-face {
+  font-family: 'Fast Fill Systems';
+  src: url('/ffs/FastFillSystems-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Fast Fill Icons';
   src: url('/ffs/FastFillIcons-Regular.otf') format('opentype');
   font-weight: normal;
@@ -20,6 +28,11 @@
 
 html { scroll-behavior: smooth; }
 body { color: var(--ffs-ink); font-family: "Gotham FFS", Arial, sans-serif; }
+body.frontStore :is(h1, h2, h3, h4, h5, h6) {
+  font-family: 'Fast Fill Systems', 'Gotham FFS', Arial, sans-serif;
+  font-weight: 700;
+  font-synthesis: none;
+}
 .page-width { max-width: 1240px; }
 
 .header {
