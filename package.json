@@ -6,7 +6,8 @@
   "scripts": {
     "setup": "evershop install",
     "dev": "evershop dev",
-    "build": "evershop build",
+    "build:custom": "tsc -p extensions/ffs_quote/tsconfig.json && tsc -p extensions/ffs_blog/tsconfig.json && tsc -p themes/ffs/tsconfig.json && node scripts/copy-build-assets.mjs",
+    "build": "npm run build:custom && evershop build",
     "start": "evershop start"
   },
   "dependencies": {

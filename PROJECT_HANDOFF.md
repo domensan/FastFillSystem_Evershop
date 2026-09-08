@@ -280,6 +280,8 @@ npx tsc -p themes\ffs\tsconfig.json
 
 Ejecutar solo los comandos correspondientes a lo modificado.
 
+Para una compilación completa, `npm run build` ejecuta estos pasos y copia automáticamente los archivos `route.json` y el SCSS del tema a `dist`.
+
 3. Si se modifica `themes/ffs/src/pages/all/ffs.scss`, sincronizar:
 
 ```powershell

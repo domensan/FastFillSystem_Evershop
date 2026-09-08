@@ -23,6 +23,7 @@ export default function FfsNav() {
       <a href="/about" onClick={() => setOpen(false)}>{_('About Us')}</a>
       <a href="/updates" onClick={() => setOpen(false)}>{_('Updates')}</a>
       <a href="/distributor" onClick={() => setOpen(false)}>{_('Distributor')}</a>
+      <a href="/contact" onClick={() => setOpen(false)}>{_('Contact')}</a>
       <a className="ffs-button ffs-button--primary"
         href="https://drive.google.com/file/d/1bux7X3ec6mlF0glVOmzTjsIqfJ-uwsYy/view?usp=sharing"
         target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)}>{_('Download Catalog')}</a>
