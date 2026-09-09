@@ -2,8 +2,8 @@ import React from 'react';
 import { _ } from '@evershop/evershop/lib/locale/translate/_';
 
 const categories = [
-  ['Couplers', '/couplers', '/ffs/home/couplers.png', 'Our couplers are engineered for quick and efficient fluid transfer, making them indispensable for high demand operations.'],
   ['Fuel Nozzles', '/fuel-nozzles', '/ffs/home/nozzle.png', 'Crafted for durability, long life, superior control, and accuracy in demanding environments.'],
+  ['Couplers', '/couplers', '/ffs/home/couplers.png', 'Our couplers are engineered for quick and efficient fluid transfer, making them indispensable for high demand operations.'],
   ['Fuel Receivers', '/fuel-receivers', '/ffs/home/receivers.png', 'Reliable and robust connection points built for safe, efficient fuel transfer.'],
   ['Fuel Vents', '/fuel-vents', '/ffs/home/vents.png', 'Pioneering vent designs that regulate pressure and help prevent overspilling.'],
   ['Pressureless', '/pressureless', '/ffs/home/pressureless.png', 'A safer, environmentally friendly alternative with consistent and reliable fuel flow.']

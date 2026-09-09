@@ -19,10 +19,10 @@ const nozzleFamilyRank: Record<string, number> = {
 };
 
 const categoryGroups = {
-  Couplers: ['Standard Crankcase'],
   'Fuel Nozzles': ['Atlas', 'Pitboss', 'SureLoc 150', 'SureLoc 1000', 'Parts'],
+  Couplers: ['Standard Crankcase'],
   'Fuel Receivers': ['Check Valve', 'Standard Receiver', 'Deep Socket Tool', 'Parts'],
-  'Fuel Vents': ['Filtered Fuel Vent', 'Pressureless Filter Vents', 'Standard Fuel Vent', 'Anti-Vandalism Flange', 'Bolt-on Flange', 'Half Coupling', 'High Flow Vent', 'NPT Adapter', 'Safety Relief Fuel Vent', 'Whistle Adapter'],
+  'Fuel Vents': ['Filtered Fuel Vent', 'Standard Fuel Vent', 'Anti-Vandalism Flange', 'Bolt-on Flange', 'Half Coupling', 'High Flow Vent', 'NPT Adapter', 'Safety Relief Fuel Vent', 'Whistle Adapter', 'Parts'],
   Pressureless: ['High Flow Pressureless', 'Parts', 'Small Tank Pressureless']
 };
 
