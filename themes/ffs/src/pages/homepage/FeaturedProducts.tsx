@@ -102,7 +102,7 @@ export default function FeaturedProducts() {
               <li>{_('Enjoy comprehensive support and product training.')}</li>
               <li>{_('Partner with a company aligned with industry growth.')}</li>
             </ul>
-            <a className="ffs-button ffs-button--primary" href="/cart">{_('Become a Distributor')}</a>
+            <a className="ffs-button ffs-button--primary" href="/distributor">{_('Become a Distributor')}</a>
           </div>
         </div>
       </section>

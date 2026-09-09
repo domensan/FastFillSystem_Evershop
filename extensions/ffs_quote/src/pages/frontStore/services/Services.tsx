@@ -54,7 +54,7 @@ export default function Services() {
               <p className="ffs-kicker">{service.tagline}</p>
               <h2>{service.title}</h2>
               <p>{service.text}</p>
-              <a className="ffs-text-link" href="/cart">Let’s Talk <span>→</span></a>
+              <a className="ffs-text-link" href="/contact#contact-form">Let’s Talk <span>→</span></a>
             </div>
           </article>
         ))}
