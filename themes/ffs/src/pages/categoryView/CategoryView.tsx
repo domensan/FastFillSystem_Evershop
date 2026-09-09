@@ -71,6 +71,7 @@ export default function CategoryView({
   const isNozzles = currentName === 'fuel nozzles';
   const isReceivers = currentName === 'fuel receivers';
   const isVents = currentName === 'fuel vents';
+  const isCouplers = currentName === 'couplers';
 
   function receiverRank(product: { name: string; sku: string }) {
     if (receiverPartsSkus.has(product.sku)) return 2; // Parts / Deep Socket Tool, last
@@ -78,7 +79,17 @@ export default function CategoryView({
     return 1; // the other receivers
   }
 
-  const displayCategory = isNozzles || isReceivers || isVents
+  // Couplers pairs each nozzle with a matching receiver (grease, engine oil,
+  // by color) — lead with the nozzles, tools/misc in the middle, and the
+  // receiver half last so the grid doesn't open on a receiver.
+  function couplerRank(product: { name: string }) {
+    const name = product.name.toLowerCase();
+    if (name.includes('nozzle')) return 0;
+    if (name.includes('receiver')) return 2;
+    return 1;
+  }
+
+  const displayCategory = isNozzles || isReceivers || isVents || isCouplers
     ? {
         ...category,
         products: {
@@ -91,6 +102,9 @@ export default function CategoryView({
             if (isVents) {
               return (ventFamilyRank[a.sku] ?? Number.MAX_SAFE_INTEGER) -
                 (ventFamilyRank[b.sku] ?? Number.MAX_SAFE_INTEGER);
+            }
+            if (isCouplers) {
+              return couplerRank(a) - couplerRank(b);
             }
             return receiverRank(a) - receiverRank(b);
           })
@@ -190,7 +204,7 @@ export const query = `
       uuid
       description
       image { alt url }
-      products(filters: [{ key: "limit", operation: eq, value: "24" }, { key: "ob", operation: eq, value: "name" }, { key: "od", operation: eq, value: "ASC" }]) {
+      products(filters: [{ key: "limit", operation: eq, value: "48" }, { key: "ob", operation: eq, value: "name" }, { key: "od", operation: eq, value: "ASC" }]) {
         items { ...CategoryProduct }
         currentFilters { key operation value }
         total
