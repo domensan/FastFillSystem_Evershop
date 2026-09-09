@@ -113,7 +113,7 @@ export default function FeaturedProducts() {
           <h2>{_('Drop Us a Line!')}</h2>
           <p>{_('Ready to enhance your fueling operations? Contact Fast Fill Systems to discover how our advanced solutions can benefit your business.')}</p>
           <address>
-            <span><strong>{_('Office')}</strong>1195 Spring Creek Pl, Springville, UT 84663</span>
+            <span><strong>{_('Office')}</strong>2055 S. Tracy Hall Parkway, Provo, UT 84606</span>
             <span><strong>{_('Email')}</strong>sales@fastfillsystems.com</span>
             <span><strong>{_('Phone Number')}</strong>+1 801-491-3600</span>
           </address>

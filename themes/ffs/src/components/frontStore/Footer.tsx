@@ -26,7 +26,7 @@ export function Footer() {
         <div>
           <h2>{_('Contact Us')}</h2>
           <address>
-            <span>1195 Spring Creek Pl<br />Springville, UT 84663</span>
+            <span>2055 S. Tracy Hall Parkway<br />Provo, UT 84606</span>
             <a href="tel:+18014913600">+1 801-491-3600</a>
             <a href="mailto:contact@fastfillsystems.com">contact@fastfillsystems.com</a>
           </address>

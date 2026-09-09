@@ -59,7 +59,7 @@ export default function Contact() {
           <p>{_('Ready to enhance your fueling operations? Reach out for inquiries, quotes, or to learn more about what Fast Fill Systems can do for you.')}</p>
           <div>
             <strong>{_('Contact Information')}</strong>
-            <span>1195 Spring Creek Pl, Springville, UT 84663</span>
+            <span>2055 S. Tracy Hall Parkway, Provo, UT 84606</span>
             <span><a href="mailto:contact@fastfillsystems.com">contact@fastfillsystems.com</a></span>
             <span><a href="tel:+18014913600">+1 801-491-3600</a></span>
             <span>{_('Mon–Thu: 8 AM–5 PM · Fri: 8 AM–3 PM (MST/MDT)')}</span>
