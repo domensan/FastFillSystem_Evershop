@@ -7,13 +7,34 @@ import { CategoryProductsPagination } from '@components/frontStore/catalog/Categ
 import React from 'react';
 import { _ } from '@evershop/evershop/lib/locale/translate/_';
 
+// SKU -> display rank for the Fuel Nozzles grid, grouped by family in the
+// order the sidebar itself follows (Atlas, Pitboss, SureLoc 150, SureLoc
+// 1000). Anything else (Parts, and the odd item still filed directly under
+// Fuel Nozzles) sorts after these, alphabetically by name as usual.
+const nozzleFamilyRank: Record<string, number> = {
+  N150ATp: 0, // Atlas
+  '001': 1, // Pitboss
+  '001-3-3': 2, // SureLoc 150
+  N1000PSLp: 3 // SureLoc 1000
+};
+
 const categoryGroups = {
   Couplers: ['Standard Crankcase'],
-  'Fuel Nozzles': ['Classic', 'Parts', 'Piston Sureloc', 'Pitboss', 'SureLoc', 'Titan'],
-  'Fuel Receivers': ['Check Valve', 'Parts', 'Deep Socket Tool', 'Standard Receiver'],
+  'Fuel Nozzles': ['Atlas', 'Pitboss', 'SureLoc 150', 'SureLoc 1000', 'Parts'],
+  'Fuel Receivers': ['Check Valve', 'Standard Receiver', 'Deep Socket Tool', 'Parts'],
   'Fuel Vents': ['Filtered Fuel Vent', 'Pressureless Filter Vents', 'Standard Fuel Vent', 'Anti-Vandalism Flange', 'Bolt-on Flange', 'Half Coupling', 'High Flow Vent', 'NPT Adapter', 'Safety Relief Fuel Vent', 'Whistle Adapter'],
   Pressureless: ['High Flow Pressureless', 'Parts', 'Small Tank Pressureless']
 };
+
+// SKUs that should sort last on the Fuel Receivers grid — the Deep Socket
+// Tool and the handful of accessory parts split out of the shared Parts
+// bucket into a Fuel-Receivers-specific one.
+const receiverPartsSkus = new Set([
+  '001-3-7', // Deep Socket Tool
+  'FFS-receiver-flange', // Receiver Flange
+  '001-3-33f', // Replacement Caps for Fuel Receivers
+  '001-3-7-3' // Standard Aluminum Receiver
+]);
 
 export default function CategoryView({
   category,
@@ -25,10 +46,32 @@ export default function CategoryView({
   searchUrl: string;
 }) {
   const categoryUrls = new Map(categories.items.map((item) => [item.name.toLowerCase(), item.url]));
+  const categoryRootIds = new Map(categories.items.map((item) => [item.name, item.categoryId]));
   const currentName = category.name.toLowerCase();
 
-  const nozzleRoot = categories.items.find((item) => item.name === 'Fuel Nozzles');
   const isNozzles = currentName === 'fuel nozzles';
+  const isReceivers = currentName === 'fuel receivers';
+
+  function receiverRank(product: { name: string; sku: string }) {
+    if (receiverPartsSkus.has(product.sku)) return 2; // Parts / Deep Socket Tool, last
+    if (product.name.toLowerCase().includes('check valve')) return 0; // most eye-catching, first
+    return 1; // the other receivers
+  }
+
+  const displayCategory = isNozzles || isReceivers
+    ? {
+        ...category,
+        products: {
+          ...category.products,
+          items: [...category.products.items].sort((a, b) =>
+            isNozzles
+              ? (nozzleFamilyRank[a.sku] ?? Number.MAX_SAFE_INTEGER) -
+                (nozzleFamilyRank[b.sku] ?? Number.MAX_SAFE_INTEGER)
+              : receiverRank(a) - receiverRank(b)
+          )
+        }
+      }
+    : category;
 
   function search(event) {
     event.preventDefault();
@@ -37,7 +80,7 @@ export default function CategoryView({
   }
 
   return (
-    <CategoryProvider category={category}>
+    <CategoryProvider category={displayCategory}>
       <main className={`ffs-category-page${isNozzles ? ' ffs-category-page--nozzles' : ''}`}>
         <header className={`ffs-category-title ${isNozzles ? 'ffs-category-banner' : 'page-width'}`}>
           {!isNozzles && <p className="ffs-kicker">Fast Fill Systems</p>}
@@ -66,9 +109,10 @@ export default function CategoryView({
                   </summary>
                   <div>
                     {children.map((child) => {
-                      const nozzleChild = parent === 'Fuel Nozzles' && categories.items.find((item) =>
-                        item.parent?.categoryId === nozzleRoot?.categoryId && item.name.toLowerCase() === child.toLowerCase());
-                      const url = (nozzleChild && nozzleChild.url) || categoryUrls.get(child.toLowerCase()) ||
+                      const rootId = categoryRootIds.get(parent);
+                      const nestedChild = rootId !== undefined && categories.items.find((item) =>
+                        item.parent?.categoryId === rootId && item.name.toLowerCase() === child.toLowerCase());
+                      const url = (nestedChild && nestedChild.url) || categoryUrls.get(child.toLowerCase()) ||
                         categoryUrls.get(parent.toLowerCase()) || '/products';
                       return (
                         <a key={`${parent}-${child}`} href={url}

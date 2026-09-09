@@ -1,5 +1,5 @@
 import { _ } from '@evershop/evershop/lib/locale/translate/_';
-import { FileText, MessagesSquare, Wrench } from 'lucide-react';
+import { BookOpen, ClipboardList, FileText } from 'lucide-react';
 import React from 'react';
 
 const catalogUrl = 'https://drive.google.com/file/d/1bux7X3ec6mlF0glVOmzTjsIqfJ-uwsYy/view?usp=sharing';
@@ -18,27 +18,27 @@ export function ProductSingleDescription() {
           <article className="ffs-product-technical__card">
             <div className="ffs-product-technical__icon"><FileText aria-hidden="true" /></div>
             <div>
-              <h3>{_('Printable Overall Data Sheet')}</h3>
+              <h3>{_('Marketing Sheets')}</h3>
               <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vitae justo eget magna fermentum.</p>
               {/* ponytail: catalog fallback until FFS supplies the product-specific PDF. */}
               <a href={catalogUrl} target="_blank" rel="noopener noreferrer">{_('Download File')}</a>
             </div>
           </article>
           <article className="ffs-product-technical__card">
-            <div className="ffs-product-technical__icon"><Wrench aria-hidden="true" /></div>
+            <div className="ffs-product-technical__icon"><ClipboardList aria-hidden="true" /></div>
             <div>
-              <h3>{_('Assembly Kit')}</h3>
+              <h3>{_('Spec Sheets')}</h3>
               <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vitae justo eget magna fermentum.</p>
-              {/* ponytail: catalog fallback until FFS supplies the assembly-kit PDF. */}
+              {/* ponytail: catalog fallback until FFS supplies the product-specific spec sheet. */}
               <a href={catalogUrl} target="_blank" rel="noopener noreferrer">{_('Download File')}</a>
             </div>
           </article>
           <article className="ffs-product-technical__card">
-            <div className="ffs-product-technical__icon"><MessagesSquare aria-hidden="true" /></div>
+            <div className="ffs-product-technical__icon"><BookOpen aria-hidden="true" /></div>
             <div>
-              <h3>{_('Custom Made')}</h3>
+              <h3>{_('Fast Fill Systems Catalog')}</h3>
               <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vitae justo eget magna fermentum.</p>
-              <a href="/cart">{_('Let’s Talk')}</a>
+              <a href={catalogUrl} target="_blank" rel="noopener noreferrer">{_('Download File')}</a>
             </div>
           </article>
         </div>

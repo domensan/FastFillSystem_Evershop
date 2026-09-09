@@ -1,0 +1,366 @@
+.ffs-gallery {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  width: 100%;
+
+  &--empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    background: #f7f7f7;
+    border-radius: 8px;
+  }
+
+  &__thumbs {
+    display: none;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 84px;
+    flex-shrink: 0;
+    max-height: 560px;
+    overflow-y: auto;
+    padding-right: 2px;
+  }
+
+  &__thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 84px;
+    height: 84px;
+    padding: 4px;
+    background: #fff;
+    border: 1px solid #e2e2e2;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    &:hover {
+      border-color: var(--ffs-blue);
+    }
+
+    &--active {
+      border-color: var(--ffs-blue);
+      border-width: 2px;
+      box-shadow: 0 0 0 1px var(--ffs-blue);
+    }
+
+    &--3d {
+      flex-direction: column;
+      gap: 2px;
+      background: #4b5157;
+      border-color: #4b5157;
+      color: #fff;
+
+      span {
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+
+      &:hover {
+        border-color: var(--ffs-blue);
+      }
+    }
+  }
+
+  &__stage {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    aspect-ratio: 1 / 1;
+    background: #f7f7f7;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  &__image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    cursor: zoom-in;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  &__model {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    --poster-color: #f7f7f7;
+
+    model-viewer {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  }
+
+  // Wraps the model-viewer canvas and its dimension overlay together so a
+  // framing nudge moves both in lockstep — the overlay's guide lines are
+  // computed from the canvas's own (untransformed) coordinates, so it must
+  // shift with the model or the two go out of alignment. The corner
+  // controls live outside this wrapper and stay anchored to the stage.
+  &__model-render {
+    position: absolute;
+    inset: 0;
+    // The model's bounding box isn't visually centered (the handle
+    // assembly sits to one side), so nudge the render right to balance
+    // the frame and give the measurement labels room on the left.
+    transform: translateX(7%);
+  }
+
+  &__model-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #8a8f96;
+    font-size: 0.85rem;
+  }
+
+  &__model-anchor {
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  &__model-dimensions {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+
+    &[hidden] {
+      display: none;
+    }
+
+    path {
+      fill: none;
+      stroke: #727982;
+      stroke-width: 1.5;
+      stroke-dasharray: 1 5;
+      stroke-linecap: round;
+    }
+
+    rect {
+      fill: #e5e5e5;
+    }
+
+    text {
+      fill: #30343a;
+      font-size: 10px;
+      text-anchor: middle;
+    }
+  }
+
+  &__model-dim-inches {
+    fill: #6f747c;
+    font-size: 8.5px;
+  }
+
+  &__model-controls {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    z-index: 2;
+    display: flex;
+    gap: 8px;
+  }
+
+  &__reset {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid #d8d8d8;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #30343a;
+    cursor: pointer;
+
+    &:hover {
+      background: #fff;
+    }
+
+    &[aria-pressed='true'] {
+      background: #30343a;
+      border-color: #30343a;
+      color: #fff;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+
+  &__3d-pill {
+    display: inline-flex;
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: rgba(30, 33, 38, 0.85);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    z-index: 2;
+
+    &:hover {
+      background: rgba(30, 33, 38, 0.95);
+    }
+
+    // Move up top when the 3D controls (Measurements / Reset view) are
+    // occupying the bottom-left corner, so the two don't collide.
+    &--active {
+      top: 12px;
+      bottom: auto;
+    }
+  }
+
+  &__dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    z-index: 1;
+  }
+
+  &__dot {
+    width: 7px;
+    height: 7px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(30, 33, 38, 0.25);
+    cursor: pointer;
+
+    &--active {
+      background: var(--ffs-blue);
+      transform: scale(1.2);
+    }
+  }
+
+  &__lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__lightbox-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.82);
+  }
+
+  &__lightbox-content {
+    position: relative;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 2.5rem;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  &__lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  &__lightbox-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    &--prev {
+      left: 16px;
+    }
+
+    &--next {
+      right: 16px;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .ffs-gallery {
+    &__thumbs {
+      display: flex;
+    }
+
+    &__3d-pill {
+      display: none !important;
+    }
+
+    &__dots {
+      display: none !important;
+    }
+  }
+}

@@ -2,8 +2,8 @@ import React from 'react';
 import { _ } from '@evershop/evershop/lib/locale/translate/_';
 
 const primaryCategories = [
-  ['Couplers', '/couplers', '/ffs/home/couplers.png'],
   ['Fuel Nozzles', '/fuel-nozzles', '/ffs/home/nozzle.png'],
+  ['Couplers', '/couplers', '/ffs/home/couplers.png'],
   ['Fuel Receivers', '/fuel-receivers', '/ffs/home/receivers.png'],
   ['Fuel Vents', '/fuel-vents', '/ffs/home/vents.png'],
   ['Pressureless', '/pressureless', '/ffs/home/pressureless.png']
@@ -11,15 +11,15 @@ const primaryCategories = [
 
 const categoryChildren = {
   Couplers: ['Standard Crankcase'],
-  'Fuel Nozzles': ['Classic', 'Parts', 'Piston Sureloc', 'Pitboss', 'SureLoc', 'Titan'],
-  'Fuel Receivers': ['Check Valve', 'Parts', 'Standard Receiver'],
+  'Fuel Nozzles': ['Atlas', 'Pitboss', 'SureLoc 150', 'SureLoc 1000', 'Parts'],
+  'Fuel Receivers': ['Check Valve', 'Standard Receiver', 'Deep Socket Tool', 'Parts'],
   'Fuel Vents': ['Filtered Fuel Vent', 'Pressureless Filter Vents', 'Standard Fuel Vent'],
   Pressureless: ['High Flow Pressureless', 'Parts', 'Small Tank Pressureless']
 };
 
 export default function Products({ categories, searchUrl }) {
   const categoryUrls = new Map(categories.items.map((item) => [item.name, item.url]));
-  const nozzleRoot = categories.items.find((item) => item.name === 'Fuel Nozzles');
+  const categoryRootIds = new Map(categories.items.map((item) => [item.name, item.categoryId]));
 
   function search(event) {
     event.preventDefault();
@@ -46,10 +46,14 @@ export default function Products({ categories, searchUrl }) {
               <details key={name}>
                 <summary><a href={url}>{_(name)}</a></summary>
                 <div>
-                  {(categoryChildren[name] || []).map((child) => (
-                    <a key={`${name}-${child}`} href={(name === 'Fuel Nozzles' && categories.items.find((item) =>
-                      item.parent?.categoryId === nozzleRoot?.categoryId && item.name === child)?.url) || categoryUrls.get(child) || url}>{_(child)}</a>
-                  ))}
+                  {(categoryChildren[name] || []).map((child) => {
+                    const rootId = categoryRootIds.get(name);
+                    const nestedUrl = rootId !== undefined && categories.items.find((item) =>
+                      item.parent?.categoryId === rootId && item.name === child)?.url;
+                    return (
+                      <a key={`${name}-${child}`} href={nestedUrl || categoryUrls.get(child) || url}>{_(child)}</a>
+                    );
+                  })}
                 </div>
               </details>
             ))}

@@ -336,3 +336,78 @@ npm run build
 5. Configurar correo real para las solicitudes de cotización.
 6. Preparar variables y credenciales de producción.
 7. Definir hosting, dominio, backups y despliegue.
+
+## 13. Galería de producto, visor 3D y descripción real (8 de septiembre de 2026)
+
+Cambios aplicados a **todas** las fichas de producto (no solo Atlas), salvo que se indique lo contrario. Nada de esto requirió tocar la base de datos de EverShop más allá de lo señalado en "Contenido cargado para el Atlas Nozzle".
+
+### 13.1 Nueva galería de imágenes
+
+Se reemplazó por completo la galería de producto que traía EverShop por defecto (un carrusel `react-slick` con puntos como miniaturas).
+
+Archivos nuevos, dentro del tema:
+
+- `themes/ffs/src/components/frontStore/catalog/Media.tsx`
+- `themes/ffs/src/components/frontStore/catalog/Media.scss`
+
+Comportamiento:
+
+- **Escritorio:** rail vertical de miniaturas a la izquierda de la imagen principal. La miniatura activa se marca con un borde azul FFS. Al hacer clic en la imagen principal se abre un lightbox de pantalla completa con flechas para navegar.
+- **Móvil:** el rail de miniaturas se oculta; en su lugar aparecen puntos de paginación debajo de la imagen principal (deslizable con los puntos, no con swipe táctil todavía).
+- Si un producto no tiene imágenes, se muestra el ícono genérico de "sin imagen" que ya traía EverShop.
+
+### 13.2 Visor 3D interactivo
+
+Se agregó soporte para mostrar un modelo 3D interactivo dentro de la misma galería, como una miniatura más ("3D") en escritorio y como un botón flotante "View 3D" / "View photos" en móvil.
+
+**Origen de los modelos 3D:** el usuario mantiene un proyecto aparte en `Desktop/Code/3D Web` (fuera de este repositorio) con los archivos `.glb` y un visor de referencia hecho con [`<model-viewer>`](https://modelviewer.dev/) de Google. Cuando exista un modelo nuevo para otro producto, hay que:
+
+1. Copiar el `.glb` correspondiente a `public/ffs/3d/` dentro de este proyecto.
+2. Agregar una entrada en el mapa `MODEL_BY_SKU` (arriba de `Media.tsx`) con el SKU del producto, la ruta pública del `.glb` y, si están medidas, sus dimensiones (ver 13.3).
+
+Hoy solo existe el modelo del Atlas Nozzle: `public/ffs/3d/n150atp.glb` (SKU `N150ATp`).
+
+La librería `model-viewer` se carga bajo demanda (solo cuando el usuario abre la pestaña 3D de un producto que tiene modelo), vía CDN de Google, para no afectar el peso de las páginas que no la usan.
+
+**Importante para quien edite este componente:** `<model-viewer>` es un web component, no un elemento HTML nativo. React **no** traduce `className` a `class` en elementos con guion en el nombre de la etiqueta, así que el tamaño del visor se fija con `style={{ width: '100%', height: '100%' }}` en vez de una clase CSS. Si en algún momento el modelo 3D vuelve a aparecer chico y pegado a una esquina, es casi seguro que alguien volvió a intentar controlar su tamaño con una clase en vez de `style`.
+
+### 13.3 Overlay de medidas sobre el modelo 3D
+
+Se portó al sitio la función de medidas que el usuario agregó después en el proyecto `3D Web` (commit "Add product dimensions with gray labels and responsive view"): un botón "Measurements" que dibuja, sobre el propio modelo, las cotas de largo/alto/diámetro con líneas guía punteadas y etiquetas en mm y pulgadas.
+
+- Los valores nominales de cada medida se definen junto al modelo en `MODEL_BY_SKU` (campo `dimensions`), no están hardcodeados en el componente de dibujo.
+- El overlay (SVG) y el propio `<model-viewer>` viven dentro de un mismo contenedor (`.ffs-gallery__model-render`) que se puede desplazar como un bloque (hoy tiene un `transform: translateX(7%)` para centrar mejor la pieza dentro del recuadro). **Si el modelo se vuelve a mover, hay que mover ese contenedor completo, nunca solo el `<model-viewer>` por separado** — las líneas de medida se calculan a partir de coordenadas internas del visor que no se enteran de transformaciones CSS aplicadas después.
+- Los botones "Measurements" y "Reset view" están fuera de ese contenedor (no se mueven con el modelo), anclados siempre a la esquina inferior izquierda del recuadro.
+
+### 13.4 Descripción real en la ficha de producto
+
+`themes/ffs/src/components/frontStore/catalog/ProductSingleForm.tsx` ahora muestra, debajo del SKU, la descripción real que ya existía en la base de datos de cada producto (campo `description` de `product_description`) pero que nunca se llegaba a renderizar en ningún lado del sitio público. Se quitaron el encabezado genérico "Product Inquiry / Build your quote" y el acordeón fijo "Technical information" que antes ocupaban ese espacio.
+
+Si un producto no tiene descripción cargada, el bloque simplemente no aparece (no se inventa texto de relleno).
+
+Pendiente: por ahora no existen los campos "Key points" ni "Variations" que aparecían en el mockup de referencia del usuario; se decidió omitirlos hasta que haya contenido real para cargar (ver 13.6).
+
+### 13.5 Alineación de las dos columnas de la ficha
+
+En `themes/ffs/src/pages/all/ffs.scss`, la fila `.product__page__middle > .grid` (imagen + info del producto) tenía `align-items: center`, pensado para cuando la columna de texto era más corta que la imagen. Al agregar la descripción real, la columna de texto pasó a ser más alta que la imagen y ese `center` hacía que la imagen quedara flotando descentrada. Se cambió a `align-items: start` (y `align-self: start` en `.product__detail__right`) para que ambas columnas arranquen siempre a la misma altura.
+
+### 13.6 Contenido cargado para el Atlas Nozzle (SKU `N150ATp`, product_id `6`)
+
+Cambios hechos directamente en la base de datos `ffs_v2`, específicos de este producto:
+
+- Se agregaron 2 imágenes de galería que existían en la página oficial pero no se habían importado (`public/ffs/products/n150atp-2.jpg` y `n150atp-3.jpg`, filas nuevas en `product_image`).
+- Se actualizó `product_description.description` con el texto de descripción provisto por el usuario.
+- Se acortó el nombre del producto de "Atlas Fuel Nozzle with Stainless Steel Castle and Plug" a **"Atlas Fuel Nozzle"** (campo `name`, y `meta_title`/`meta_description` a juego). La URL del producto no se tocó, para no romper el enlace existente.
+
+**Nota de precisión pendiente de confirmar con ingeniería:** el texto de descripción cargado dice que el Atlas usa "twelve stainless-steel ball bearings" para el latching. Según `MD/02_products.md`, esa característica corresponde al Piston SureLoc/Titan, y las especificaciones del Atlas están marcadas ahí como "no confirmadas, no inferir". Se cargó el texto tal como lo pidió el usuario, pero conviene revisarlo con FFS antes de darlo por definitivo.
+
+### 13.7 Archivos tocados en este bloque de trabajo
+
+- `themes/ffs/src/components/frontStore/catalog/Media.tsx` (nuevo)
+- `themes/ffs/src/components/frontStore/catalog/Media.scss` (nuevo)
+- `themes/ffs/src/components/frontStore/catalog/ProductSingleForm.tsx`
+- `themes/ffs/src/pages/all/ffs.scss`
+- `scripts/copy-build-assets.mjs` (se generalizó para copiar cualquier `.scss` del tema a `dist`, no solo `pages/all/ffs.scss`; antes el SCSS de un componente nuevo como `Media.scss` no se copiaba y el build de producción quedaba sin esos estilos)
+- `public/ffs/products/n150atp-2.jpg`, `n150atp-3.jpg` (nuevos)
+- `public/ffs/3d/n150atp.glb` (nuevo)
+- Base de datos `ffs_v2`: tabla `product_image` (2 filas nuevas) y `product_description` (producto 6) — ver 13.6.

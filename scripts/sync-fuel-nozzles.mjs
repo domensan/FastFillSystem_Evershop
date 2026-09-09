@@ -1,5 +1,14 @@
 // Reconcile the 13 listings at https://www.fastfillsystems.com/cat/fuel-nozzles/.
 // Run from the EN root with node scripts/sync-fuel-nozzles.mjs. Uses the local .env.
+//
+// Stale as of 2026-09-09: the Classic (001-3-4), Piston Sureloc (001-1) and
+// SureLoc 1000 (001-3-2) duplicate SKUs below were removed from the catalog
+// after this script last ran; the Titan placeholder (001-3-1) was replaced
+// by the real Atlas Nozzle (N150ATp); and 'Piston Sureloc'/'SureLoc' were
+// renamed to 'SureLoc 150'/'SureLoc 1000', with N1000PSLp moved into the
+// latter. Re-running this script as-is will fail its final assertion.
+// Review the `families` and `expected` list against the current catalog
+// before running it again.
 import 'dotenv/config';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -11,7 +20,7 @@ const families = [
   ['Piston Sureloc', 'piston-sureloc', ['001-3-3']],
   ['Pitboss', 'pitboss', ['001']],
   ['SureLoc', 'sureloc', ['001-1', '001-3-2']],
-  ['Titan', 'titan', ['001-3-1']]
+  ['Atlas', 'atlas', ['N150ATp']]
 ];
 // Keep the original website's separate listings and SKU identifiers; do not infer
 // that the two N1000PSLp listings are interchangeable or import placeholder prices.
@@ -49,7 +58,7 @@ try {
     const updated = await client.query(`UPDATE product SET category_id=$1,updated_at=NOW() WHERE sku=ANY($2::text[]) RETURNING sku`, [category.category_id,skus]);
     assert.equal(updated.rowCount, skus.length, `Missing expected products in ${name}`);
   }
-  const expected = [...families.flatMap(([, , skus]) => skus), 'N150ATp', 'S1510', 'N1000PSLp'];
+  const expected = [...families.flatMap(([, , skus]) => skus), 'S1510', 'N1000PSLp'];
   const products = (await client.query(`WITH RECURSIVE tree AS (SELECT category_id FROM category WHERE category_id=$1 UNION ALL SELECT c.category_id FROM category c JOIN tree t ON c.parent_id=t.category_id) SELECT p.sku FROM product p WHERE p.category_id IN (SELECT category_id FROM tree) AND p.status=true AND p.visibility=true`, [root.category_id])).rows.map(p=>p.sku);
   assert.deepEqual(products.sort(), expected.sort(), 'Fuel Nozzles must contain exactly the 13 source listings');
   await client.query(`INSERT INTO url_rewrite(language,request_path,target_path,entity_uuid,entity_type)

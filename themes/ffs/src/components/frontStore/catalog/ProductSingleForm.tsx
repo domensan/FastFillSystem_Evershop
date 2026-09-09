@@ -1,4 +1,5 @@
 import { Button } from '@components/common/ui/Button.js';
+import { Editor } from '@components/common/Editor.js';
 import { AddToCart } from '@components/frontStore/cart/AddToCart.js';
 import { useProduct } from '@components/frontStore/catalog/ProductContext.js';
 import React from 'react';
@@ -6,13 +7,18 @@ import { toast } from 'react-toastify';
 import { _ } from '@evershop/evershop/lib/locale/translate/_';
 
 export function ProductSingleForm() {
-  const { sku, inventory: { isInStock } } = useProduct();
+  const { sku, inventory: { isInStock }, description } = useProduct();
   const [qty, setQty] = React.useState(1);
+  const hasDescription = Array.isArray(description) && description.length > 0;
 
   return (
     <div className="ffs-product-quote">
-      <p className="ffs-kicker">{_('Product Inquiry')}</p>
-      <h2>{_('Build your quote')}</h2>
+      {hasDescription && (
+        <div className="ffs-product-quote__description">
+          <p className="ffs-kicker">{_('Description')}</p>
+          <Editor rows={description} />
+        </div>
+      )}
       <div className="ffs-product-quote__quantity">
         <label htmlFor="quote-qty">{_('Quantity')}</label>
         <input id="quote-qty" type="number" min="1"
@@ -29,10 +35,6 @@ export function ProductSingleForm() {
           </Button>
         )}
       </AddToCart>
-      <details className="ffs-product-quote__details" open>
-        <summary>{_('Technical information')}</summary>
-        <p>{_('Select a quantity and add this product to My Quote. Our team will confirm the correct configuration and pricing.')}</p>
-      </details>
     </div>
   );
 }
