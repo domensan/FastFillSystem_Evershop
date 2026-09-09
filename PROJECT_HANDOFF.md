@@ -411,3 +411,130 @@ Cambios hechos directamente en la base de datos `ffs_v2`, específicos de este p
 - `public/ffs/products/n150atp-2.jpg`, `n150atp-3.jpg` (nuevos)
 - `public/ffs/3d/n150atp.glb` (nuevo)
 - Base de datos `ffs_v2`: tabla `product_image` (2 filas nuevas) y `product_description` (producto 6) — ver 13.6.
+
+## 14. Reordenamiento de catálogo, contenido SEO, formulario de cotización, página Legal y ajustes del hero (9 de septiembre de 2026)
+
+### 14.1 Limpieza de productos duplicados
+
+Se detectó y confirmó con el usuario que varios productos existían dos veces: una versión con SKU genérico tipo `001-x-x` (creada por una reconciliación automática anterior) y otra con el SKU real del fabricante. Se eliminaron de la base de datos `ffs_v2` (producto e imágenes huérfanas en `public/ffs/products`):
+
+- `Titan N150Tp` (SKU `001-3-1`, product_id 84) — duplicado de lo que pasó a llamarse Atlas.
+- `Classic N150Cp` (product_id 19).
+- `SureLoc 1000` duplicado (product_id 88).
+- `Sureloc N150PSL` duplicado (product_id 83) — se conservó el otro registro de este par a pedido explícito del usuario ("dejar una").
+
+El script `scripts/sync-fuel-nozzles.mjs`, origen de estos duplicados, se dejó con un comentario grande marcándolo como obsoleto: no debe volver a ejecutarse tal como está. Su entrada para la familia `Titan` se actualizó a `Atlas` (SKU `N150ATp`) para que, si algún día se reutiliza como referencia, ya no reintroduzca el nombre viejo.
+
+### 14.2 Renombre Titan → Atlas
+
+La marca "Titan" se está descontinuando a favor de "Atlas" (confirmado también en el sitio oficial: la URL `titan-n150tp` en `fastfillsystems.com` ya muestra contenido de Atlas). Se renombró en la base de datos:
+
+- Categoría 30: `Titan` → `Atlas` (incluyendo su `url_rewrite`). El producto 6 (Atlas Fuel Nozzle) quedó dentro de esta categoría.
+- Categorías 24 y 35 renombradas a `SureLoc 150` y `SureLoc 1000` respectivamente (con sus `url_rewrite`). El producto 2 se movió a la categoría 35 y se renombró a "Piston Sureloc N1000PSLp" (`name`, `meta_title`, `meta_description`).
+
+### 14.3 Jerarquía real de Fuel Receivers, Fuel Vents y Pressureless
+
+Se repitió, para tres familias más, el mismo problema ya documentado para Fuel Nozzles: varias subcategorías existían como categorías **planas** de nivel superior en vez de ser hijas de su familia lógica, así que al entrar a la categoría padre solo se veían los pocos productos asignados directamente a ella.
+
+Reorganización aplicada directamente en la base de datos:
+
+- **Fuel Receivers** (categoría 16): se reparentaron `Check Valve` (18) y `Standard Receiver` (29) bajo ella; se crearon las subcategorías nuevas `Deep Socket Tool` (36) y `Parts` (37), y se les movieron los productos 20, 69, 72 y 78 (antes mezclados en el `Parts` genérico compartido, categoría 15).
+- **Fuel Vents** (categoría 17): se reparentaron sus 9 subcategorías (ids 13, 14, 19, 20, 22, 23, 25, 28, 31) bajo ella; se creó `Parts` (38) y se le movió el producto 73.
+- **Pressureless** (categoría 26): se reparentaron sus subcategorías (21, 27); se creó `Parts` (39) y se le movieron los productos 54, 52, 53, 70 y 75.
+
+### 14.4 Orden de submenús y de las grillas de producto
+
+A pedido del usuario, **Fuel Nozzles debe aparecer primero** en el submenú lateral de categorías en absolutamente todas las páginas (no solo en la propia página de Nozzles), tanto en EN como en ES. Dentro de cada familia, el orden también quedó fijo y debe respetarse si se agregan productos nuevos:
+
+- **Fuel Nozzles:** Atlas / Pitboss / SureLoc 150 / SureLoc 1000 / Parts.
+- **Fuel Receivers:** Check Valve / Standard Receiver / Deep Socket Tool / Parts.
+- **Fuel Vents:** orden fijado para calzar con 3 páginas del catálogo impreso que aportó el usuario, con `Parts` al final.
+- **Couplers:** los productos "Grease Receiver" y "Engine Oil Receiver" ya no aparecen primero en la grilla — el usuario prefirió que los nozzles de la familia se muestren antes que los receivers.
+
+Esto se implementó en dos lugares que deben mantenerse sincronizados (mismo criterio de orden en ambos):
+
+- `themes/ffs/src/pages/categoryView/CategoryView.tsx`: objeto `categoryGroups` (orden del submenú) más las constantes `nozzleFamilyRank`, `receiverPartsSkus`, `ventFamilyRank` y la función `couplerRank()`, usadas para ordenar `category.products.items` antes de renderizar la grilla.
+- `extensions/ffs_quote/src/pages/frontStore/products/Products.tsx`: mismo criterio de orden replicado para la página `/products`.
+
+**Nota técnica importante:** la familia Couplers tiene 27 productos, más que el límite anterior de la consulta GraphQL (`filters:[{key:"limit", value:"24"}]`). Como el ordenamiento se aplica en el cliente después de traer la página de resultados, con el límite en 24 la familia quedaba cortada a mitad de la lista y el orden se rompía. Se subió el límite a `"48"` en la consulta de `CategoryView.tsx`.
+
+### 14.5 Corrección del bug del acordeón del sidebar
+
+El usuario reportó que al hacer clic en "Parts" en el submenú se abrían "todas las parts de todos los submenús" — no era un problema de navegación (la página correcta sí cargaba), sino que **los cuatro acordeones de familia se abrían a la vez** en el sidebar. La causa: la lógica que decide si un acordeón está `open` comparaba el nombre de la categoría actual contra el **texto** de cada hijo (`children.some(c => c.toLowerCase() === currentName)`), y como Fuel Nozzles, Fuel Receivers, Fuel Vents y Pressureless tienen cada una su propia subcategoría llamada literalmente "Parts", el texto coincidía en las cuatro familias simultáneamente.
+
+Solución en `CategoryView.tsx`: se agregó `categoryId` a la consulta GraphQL de `currentCategory`, y cada hijo del menú ahora se resuelve contra su categoría real (`resolvedChildren`, con su propio `categoryId`) para comparar por **id**, no por texto — tanto para decidir qué acordeón queda `open` como para el `aria-current` de cada enlace.
+
+### 14.6 Descripciones de producto
+
+Se agregó/actualizó texto descriptivo real en `product_description.description` para prácticamente todo el catálogo, en dos tandas:
+
+1. Descripciones específicas pedidas por el usuario para Atlas, Pitboss, SureLoc 150 y SureLoc 1000 (texto entregado literal por el usuario).
+2. Descripciones SEO para los **78 productos restantes** que no las tenían, con un límite de 46 palabras cada una, reutilizando el mismo texto entre variantes de color/línea cuando correspondía (por ejemplo, los nozzles Matrix de distintos colores). Todo el contenido se redactó apoyándose en `MD/02_products.md`, evitando afirmar a qué fluido corresponde cada código de color de los Matrix (el propio archivo MD advierte que eso no está verificado).
+
+**Importante — esto no quedó en el repositorio de código:** ambas tandas se cargaron con `UPDATE` directos por SQL sobre la base `ffs_v2`, no mediante una migración de EverShop ni un archivo versionado en Git. Si se necesita reconstruir la base de datos desde cero, estas descripciones **no** se recrean solas al hacer `git clone` + migraciones; hay que volver a cargarlas (o, mejor, convertir este trabajo en una migración/seed real antes de que el proyecto pase a producción).
+
+### 14.7 Formulario de cotización: país e industria
+
+- **Bug de país:** el selector de país del formulario de cotización (`themes/ffs/src/pages/cart/ShoppingCart.tsx`) solo mostraba el placeholder "Country" porque la consulta GraphQL pedía `allowedCountries` (filtrado por `shipping_zone`, tabla vacía porque el sitio no tiene envíos reales). Se cambió a `countries` (lista completa, sin ese filtro), que sí devuelve los ~246 países.
+- **Cambio de campos, a pedido del usuario, para mejorar la segmentación de marketing sin alargar el formulario:** se eliminó el campo `Address` y se reemplazó el campo de texto libre `Application or Comments` por un `select` obligatorio `Industry` con las opciones Mining, Construction, Agriculture, Rail, Fleet, Heavy Equipment y Other.
+
+Cambios asociados en la extensión `ffs_quote`:
+
+- `src/api/createQuote/[bodyParser]createQuote.ts`: recibe `industry`; el arreglo de campos obligatorios pasó de incluir `address1` a incluir `industry`; el correo de notificación ahora muestra un bloque `Location: {city}, {country}` (reemplaza al bloque de `Address`) y un bloque `Industry: {industry}` cuando corresponde.
+- `src/api/listQuotes/listQuotes.ts`: el `SELECT` incluye la columna `industry`.
+- `src/pages/admin/quoteGrid/QuoteGrid.tsx`: muestra `Location` (ciudad/país) e `Industry` en vez del bloque de dirección.
+- `src/migration/Version-1.2.0.ts` (nueva): `ALTER TABLE ffs_quote_request ADD COLUMN IF NOT EXISTS industry varchar;` — aplicada también a mano contra la base de datos local en su momento porque el servidor de desarrollo no se reinició de inmediato; al desplegar en un entorno nuevo, esta migración sí corre sola.
+
+### 14.8 Nueva dirección de FFS
+
+La dirección de oficina cambió de Springville a **2055 S. Tracy Hall Parkway, Provo, UT 84606**. Se actualizó en todos los lugares donde aparecía: `FeaturedProducts.tsx` (sección de contacto del home), `Footer.tsx`, `extensions/ffs_quote/src/pages/frontStore/contact/Contact.tsx` y la página Legal nueva (ver 14.9).
+
+### 14.9 Página Legal
+
+Se replicó en `/legal` el contenido de `https://www.fastfillsystems.com/privacy-policy-2/` (Privacy Policy + Standard Condition of Sales), agregado al footer justo después de "Request a Quote".
+
+- Archivos nuevos: `extensions/ffs_quote/src/pages/frontStore/legal/Legal.tsx` y su `route.json` (`path: "/legal"`).
+- El texto se reprodujo fielmente, incluyendo inconsistencias propias de la fuente (numeración romana de secciones irregular, la frase "ten (5) years" que mezcla el número en palabras con el dígito) — no se "corrigieron" en silencio, quedan tal cual para que FFS decida.
+- La dirección de oficina dentro del texto legal se actualizó a la nueva (14.8); los placeholders rotos `"[email protected]"` de la fuente se reemplazaron por `contact@fastfillsystems.com`.
+
+### 14.10 Auditoría de enlaces del sitio
+
+A partir de un bug puntual reportado por el usuario ("Become a Distributor" en el home llevaba al formulario de cotización en vez de al formulario de distribuidor), se revisaron los enlaces principales del sitio:
+
+- `themes/ffs/src/pages/homepage/FeaturedProducts.tsx`: el botón "Become a Distributor" pasó de `href="/cart"` a `href="/distributor"`.
+- `extensions/ffs_quote/src/pages/frontStore/services/Services.tsx`: los enlaces "Let's Talk" de cada servicio pasaron de `href="/cart"` a `href="/contact#contact-form"` (el CTA final de la página, "Get a Quote", se dejó apuntando a `/cart` a propósito, porque ese sí es un pedido de cotización).
+- Se confirmó que el `id="contact-form"` duplicado entre el estado de éxito y el formulario de contacto en `Contact.tsx` no es un bug real: los dos `<div>` son mutuamente excluyentes según el estado del formulario (nunca coexisten en el DOM al mismo tiempo).
+
+### 14.11 Hero del home: brillo y encuadre de la imagen del nozzle
+
+El usuario reportó primero que la imagen del hero se veía demasiado oscura ("casi no se nota el nozzles") y, después de un primer ajuste de brillo, aclaró que el problema real era de **encuadre**: la foto original (`public/ffs/home/hero-1.webp`, 1920×1280) es mucho más alta de lo necesario para una franja de hero ancha y baja, así que al recortarla automáticamente con `object-fit: cover` el nozzle quedaba reducido a una porción muy pequeña del cuadro. El usuario adjuntó como referencia un recorte panorámico de la misma foto donde el nozzle se ve grande y bien centrado.
+
+Cambios en `themes/ffs/src/pages/all/ffs.scss` (selector `.ffs-home-hero` y relacionados):
+
+- Se aligeró el degradado oscuro (`::after`) y se le agregó `brightness(1.4) contrast(1.05)` al filtro de las imágenes del slideshow (que se mantienen en escala de grises).
+- Se agregó `object-position: 68% center` para las imágenes del hero dentro del media query de móvil, porque en pantallas angostas y altas el recorte automático dejaba fuera justo la mitad donde está el nozzle.
+
+Cambio de asset: `public/ffs/home/hero-1.webp` se reemplazó por una versión recortada a 1920×820 (con `sharp`, centrada sobre el nozzle) para que la composición se acerque a la referencia entregada por el usuario, en vez de depender únicamente de CSS para "adivinar" el encuadre correcto. Los otros tres slides (`hero-2/3/4.webp`) no se tocaron — el pedido fue solo sobre la imagen del nozzle.
+
+### 14.12 Archivos tocados en este bloque de trabajo
+
+- `themes/ffs/src/pages/categoryView/CategoryView.tsx`
+- `extensions/ffs_quote/src/pages/frontStore/products/Products.tsx`
+- `themes/ffs/src/pages/homepage/FeaturedProducts.tsx`
+- `themes/ffs/src/pages/homepage/Hero.tsx` (sin cambios de código; solo se investigó como parte de 14.11, el fix quedó en `ffs.scss` y en el asset)
+- `themes/ffs/src/pages/all/ffs.scss`
+- `themes/ffs/src/components/frontStore/Footer.tsx`
+- `themes/ffs/src/pages/cart/ShoppingCart.tsx`
+- `extensions/ffs_quote/src/pages/frontStore/legal/Legal.tsx` (nuevo) + `route.json`
+- `extensions/ffs_quote/src/pages/frontStore/services/Services.tsx`
+- `extensions/ffs_quote/src/pages/frontStore/contact/Contact.tsx`
+- `extensions/ffs_quote/src/api/createQuote/[bodyParser]createQuote.ts`
+- `extensions/ffs_quote/src/api/listQuotes/listQuotes.ts`
+- `extensions/ffs_quote/src/pages/admin/quoteGrid/QuoteGrid.tsx`
+- `extensions/ffs_quote/src/migration/Version-1.2.0.ts` (nuevo)
+- `scripts/sync-fuel-nozzles.mjs` (marcado obsoleto, ver 14.1)
+- `translations/es/general.csv`
+- `public/ffs/home/hero-1.webp` (reemplazado)
+- Base de datos `ffs_v2`: eliminación de 4 productos duplicados (14.1), renombres y reparenteos de categorías (14.2 y 14.3), movimiento de productos entre categorías, `industry varchar` en `ffs_quote_request`, y las descripciones de producto de 14.6 (estas últimas **no versionadas en Git**, ver advertencia en 14.6).
+
+Todo lo anterior se sincronizó también al worktree `ES` (rama `local/es`) mediante `git merge --ff-only main`, recompilando `tsc` y `copy-build-assets.mjs` en ambos lados después de cada cambio relevante.
