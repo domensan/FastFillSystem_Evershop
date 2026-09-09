@@ -36,6 +36,25 @@ const receiverPartsSkus = new Set([
   '001-3-7-3' // Standard Aluminum Receiver
 ]);
 
+// SKU -> display rank for the Fuel Vents grid, matching the print catalog's
+// page order (Filtered Fuel Vent family, then Standard/Fuel Vents pairs).
+// Anything not listed (Breather Adapter, the high-volume top/bottom vent,
+// Replacement Filter) sorts after these in the usual alphabetical order.
+const ventFamilyRank: Record<string, number> = {
+  V15sdf0F: 0, // Remote Mount Filter Vent
+  V15sdddaf0F: 1, // High Volume Vacuum Break
+  V150F: 2, // Filtered Fuel Vent (Direct Mount)
+  sV15sdddaf0Fd: 3, // Low Profile Filter Vent
+  'V1502f3d3-1': 4, // Bolt-on Flange
+  dV15023d3: 5, // Half Coupling
+  ddV15023d3: 6, // Whistle Adapter
+  ddV1d5023d3: 7, // High Flow Vent
+  V150Fsfsdf: 8, // Standard Fuel Vent
+  V150Fsfsdfdg3: 9, // Safety Relief Fuel Vent
+  V150233: 10, // Anti-Vandalism Flange
+  V15023d3: 11 // NPT Adapter
+};
+
 export default function CategoryView({
   category,
   categories,
@@ -51,6 +70,7 @@ export default function CategoryView({
 
   const isNozzles = currentName === 'fuel nozzles';
   const isReceivers = currentName === 'fuel receivers';
+  const isVents = currentName === 'fuel vents';
 
   function receiverRank(product: { name: string; sku: string }) {
     if (receiverPartsSkus.has(product.sku)) return 2; // Parts / Deep Socket Tool, last
@@ -58,17 +78,22 @@ export default function CategoryView({
     return 1; // the other receivers
   }
 
-  const displayCategory = isNozzles || isReceivers
+  const displayCategory = isNozzles || isReceivers || isVents
     ? {
         ...category,
         products: {
           ...category.products,
-          items: [...category.products.items].sort((a, b) =>
-            isNozzles
-              ? (nozzleFamilyRank[a.sku] ?? Number.MAX_SAFE_INTEGER) -
-                (nozzleFamilyRank[b.sku] ?? Number.MAX_SAFE_INTEGER)
-              : receiverRank(a) - receiverRank(b)
-          )
+          items: [...category.products.items].sort((a, b) => {
+            if (isNozzles) {
+              return (nozzleFamilyRank[a.sku] ?? Number.MAX_SAFE_INTEGER) -
+                (nozzleFamilyRank[b.sku] ?? Number.MAX_SAFE_INTEGER);
+            }
+            if (isVents) {
+              return (ventFamilyRank[a.sku] ?? Number.MAX_SAFE_INTEGER) -
+                (ventFamilyRank[b.sku] ?? Number.MAX_SAFE_INTEGER);
+            }
+            return receiverRank(a) - receiverRank(b);
+          })
         }
       }
     : category;
