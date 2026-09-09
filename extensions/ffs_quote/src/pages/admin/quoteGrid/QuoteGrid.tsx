@@ -12,6 +12,7 @@ type Quote = {
   country?: string;
   province?: string;
   postcode?: string;
+  industry?: string;
   message?: string;
   status: string;
   created_at: string;
@@ -69,14 +70,10 @@ export default function QuoteGrid({ listApi }) {
                 <p><strong>Contact:</strong> {quote.name}</p>
                 <p><strong>Email:</strong> <a href={`mailto:${quote.email}`}>{quote.email}</a></p>
                 {quote.phone && <p><strong>Phone:</strong> {quote.phone}</p>}
-                {quote.address_1 && (
-                  <address className="not-italic mt-3">
-                    <strong className="block">Address:</strong>
-                    {quote.address_1}{quote.address_2 && <>, {quote.address_2}</>}<br />
-                    {quote.city}, {quote.province} {quote.postcode}<br />
-                    {quote.country}
-                  </address>
+                {(quote.city || quote.country) && (
+                  <p className="mt-3"><strong>Location:</strong> {[quote.city, quote.country].filter(Boolean).join(', ')}</p>
                 )}
+                {quote.industry && <p className="mt-1"><strong>Industry:</strong> {quote.industry}</p>}
                 {quote.message && <p className="mt-3">{quote.message}</p>}
               </div>
               <ul>

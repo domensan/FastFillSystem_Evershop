@@ -24,6 +24,7 @@ export default function ShoppingCart({ saveApi, countries }: { saveApi: string; 
   const { data: cart } = useCartState();
   const [status, setStatus] = React.useState({ loading: false, reference: '', error: '' });
   const [country, setCountry] = React.useState('');
+  const [industry, setIndustry] = React.useState('');
   const [draft, setDraft] = React.useState<Record<string, string>>({});
   const [draftReady, setDraftReady] = React.useState(false);
 
@@ -32,6 +33,7 @@ export default function ShoppingCart({ saveApi, countries }: { saveApi: string; 
       const savedDraft = JSON.parse(localStorage.getItem('ffsQuoteDraft') || '{}');
       setDraft(savedDraft);
       setCountry(savedDraft.country || '');
+      setIndustry(savedDraft.industry || '');
     } catch {
       localStorage.removeItem('ffsQuoteDraft');
     }
@@ -110,20 +112,31 @@ export default function ShoppingCart({ saveApi, countries }: { saveApi: string; 
                 <label className="block">{_('Email')} <span className="text-critical">*</span>
                   <input className="form-field mt-2" name="email" type="email" placeholder={_('Email')} defaultValue={draft.email} required />
                 </label>
-                <label className="block">{_('Address')} <span className="text-critical">*</span>
-                  <input className="form-field mt-2" name="address1" placeholder={_('Address')} defaultValue={draft.address1} required />
-                </label>
-                <label className="block">{_('City')} <span className="text-critical">*</span>
-                  <input className="form-field mt-2" name="city" placeholder={_('City')} defaultValue={draft.city} required />
-                </label>
-                <label className="block">{_('Country')} <span className="text-critical">*</span>
-                  <select className="form-field mt-2" name="country" value={country}
-                    onChange={(event) => setCountry(event.target.value)} required>
-                    <option value="">{_('Country')}</option>
-                    {countries.map(({ code, name }) => <option key={code} value={code}>{name}</option>)}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <label className="block">{_('City')} <span className="text-critical">*</span>
+                    <input className="form-field mt-2" name="city" placeholder={_('City')} defaultValue={draft.city} required />
+                  </label>
+                  <label className="block">{_('Country')} <span className="text-critical">*</span>
+                    <select className="form-field mt-2" name="country" value={country}
+                      onChange={(event) => setCountry(event.target.value)} required>
+                      <option value="">{_('Country')}</option>
+                      {countries.map(({ code, name }) => <option key={code} value={code}>{name}</option>)}
+                    </select>
+                  </label>
+                </div>
+                <label className="block">{_('Industry')} <span className="text-critical">*</span>
+                  <select className="form-field mt-2" name="industry" value={industry}
+                    onChange={(event) => setIndustry(event.target.value)} required>
+                    <option value="">{_('Industry')}</option>
+                    <option value="Mining">{_('Mining')}</option>
+                    <option value="Construction">{_('Construction')}</option>
+                    <option value="Agriculture">{_('Agriculture')}</option>
+                    <option value="Rail">{_('Rail')}</option>
+                    <option value="Fleet">{_('Fleet')}</option>
+                    <option value="Heavy Equipment">{_('Heavy Equipment')}</option>
+                    <option value="Other">{_('Other')}</option>
                   </select>
                 </label>
-                <label className="block">{_('Application or Comments')}<textarea className="form-field mt-2" name="message" rows={5} defaultValue={draft.message} /></label>
                 {status.error && <p role="alert" className="text-critical">{status.error}</p>}
                 <Button type="submit" className="w-full" size="xl" disabled={status.loading}>
                   {status.loading ? _('SENDING…') : _('SEND QUOTE REQUEST')}
