@@ -187,7 +187,7 @@ export const layout = { areaId: 'content', sortOrder: 10 };
 export const query = `
   query QuoteCart {
     saveApi: url(routeId: "createQuote")
-    countries: allowedCountries {
+    countries: countries {
       code
       name
     }
