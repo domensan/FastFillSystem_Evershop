@@ -122,8 +122,26 @@ export default function CategoryView({
           <h2>{_('Product Categories')}</h2>
           <nav aria-label={_('Product categories')}>
             {Object.entries(categoryGroups).map(([parent, children]) => {
+              const rootId = categoryRootIds.get(parent);
+              // Resolve each label to its real category first (scoped to this
+              // parent's own children), since several families reuse the same
+              // label (e.g. every family has its own "Parts") — matching by
+              // name alone would highlight/open every family that has a
+              // same-named child at once.
+              const resolvedChildren = children.map((child) => {
+                const nestedChild = rootId !== undefined && categories.items.find((item) =>
+                  item.parent?.categoryId === rootId && item.name.toLowerCase() === child.toLowerCase());
+                const fallback = nestedChild ? undefined : categories.items.find((item) =>
+                  item.name.toLowerCase() === child.toLowerCase());
+                const match = nestedChild || fallback;
+                return {
+                  label: child,
+                  url: match?.url || categoryUrls.get(parent.toLowerCase()) || '/products',
+                  categoryId: match?.categoryId
+                };
+              });
               const active = parent.toLowerCase() === currentName ||
-                children.some((child) => child.toLowerCase() === currentName);
+                resolvedChildren.some((rc) => rc.categoryId === category.categoryId);
               return (
                 <details key={parent} open={active || undefined}>
                   <summary>
@@ -133,19 +151,12 @@ export default function CategoryView({
                     </a>
                   </summary>
                   <div>
-                    {children.map((child) => {
-                      const rootId = categoryRootIds.get(parent);
-                      const nestedChild = rootId !== undefined && categories.items.find((item) =>
-                        item.parent?.categoryId === rootId && item.name.toLowerCase() === child.toLowerCase());
-                      const url = (nestedChild && nestedChild.url) || categoryUrls.get(child.toLowerCase()) ||
-                        categoryUrls.get(parent.toLowerCase()) || '/products';
-                      return (
-                        <a key={`${parent}-${child}`} href={url}
-                          aria-current={child.toLowerCase() === currentName ? 'page' : undefined}>
-                          {_(child)}
-                        </a>
-                      );
-                    })}
+                    {resolvedChildren.map((rc) => (
+                      <a key={`${parent}-${rc.label}`} href={rc.url}
+                        aria-current={rc.categoryId === category.categoryId ? 'page' : undefined}>
+                        {_(rc.label)}
+                      </a>
+                    ))}
                   </div>
                 </details>
               );
@@ -174,6 +185,7 @@ export const query = `
   query CategoryPage {
     category: currentCategory {
       showProducts
+      categoryId
       name
       uuid
       description
