@@ -1,6 +1,7 @@
 import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import { BookOpen, ClipboardList, FileText } from 'lucide-react';
 import React from 'react';
+import { RelatedProducts } from '../../../pages/productView/RelatedProducts.js';
 
 const catalogUrl = 'https://drive.google.com/file/d/1bux7X3ec6mlF0glVOmzTjsIqfJ-uwsYy/view?usp=sharing';
 
@@ -44,6 +45,7 @@ export function ProductSingleDescription() {
         </div>
       </div>
       </section>
+      <RelatedProducts />
       <section className="ffs-product-newsletter">
         <p>{_('Follow the latest trends')}</p>
         <h2>{_('With our daily newsletter')}</h2>

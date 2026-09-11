@@ -385,6 +385,11 @@ body.frontStore :is(h1, h2, h3, h4, h5, h6) {
 .ffs-product-newsletter input { flex: 1; min-width: 0; min-height: 44px; padding: 0 .9rem; border: 1px solid #cbd2d7; border-radius: 4px 0 0 4px; background: #fff; color: #111820; }
 .ffs-product-newsletter button { min-height: 44px; padding: 0 1.1rem; border: 0; border-radius: 0 4px 4px 0; background: var(--ffs-blue); color: white; font-weight: 800; }
 .content:has(.ffs-product-newsletter) + .ffs-footer { margin-top: 0; }
+.ffs-related-products { position: relative; width: 100vw; margin: 0 0 0 calc(50% - 50vw); padding: 4.5rem 1.5rem 5rem; background: #f7f7f7; }
+.ffs-related-products header { max-width: 640px; margin: 0 auto 2.5rem; text-align: center; }
+.ffs-related-products h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); font-weight: 900; text-transform: uppercase; color: #111820; }
+.ffs-related-products .product__grid { max-width: 1240px; margin: 0 auto; }
+.ffs-related-products .product__list__item h2 { line-height: 1.2; }
 .ffs-quote-form label {
   color: #111820;
   font-size: .9rem;

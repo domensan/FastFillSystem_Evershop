@@ -24,7 +24,7 @@ const categoryGroups = {
   Couplers: ['Standard Crankcase'],
   'Fuel Receivers': ['Check Valve', 'Standard Receiver', 'Deep Socket Tool', 'Parts'],
   'Fuel Vents': ['Filtered Fuel Vent', 'Standard Fuel Vent', 'Anti-Vandalism Flange', 'Bolt-on Flange', 'Half Coupling', 'High Flow Vent', 'NPT Adapter', 'Safety Relief Fuel Vent', 'Whistle Adapter', 'Parts'],
-  Pressureless: ['High Flow Pressureless', 'Parts', 'Small Tank Pressureless']
+  Pressureless: ['High Flow Pressureless', 'Small Tank Pressureless', 'Parts']
 };
 
 // SKUs that should sort last on the Fuel Receivers grid — the Deep Socket
