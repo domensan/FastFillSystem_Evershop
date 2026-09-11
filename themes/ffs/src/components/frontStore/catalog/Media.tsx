@@ -27,6 +27,7 @@ declare module 'react' {
         'max-camera-orbit'?: string;
         'min-field-of-view'?: string;
         'max-field-of-view'?: string;
+        orientation?: string;
       };
     }
   }
@@ -39,6 +40,22 @@ interface DimensionSpec {
 
 interface ModelConfig {
   src: string;
+  // model-viewer's `orientation` attribute — raw GLB axes differ per scan,
+  // this rotates the model upright. Copied from the reference viewer at
+  // ~/Desktop/Code/3D Web/index.html for each product.
+  orientation: string;
+  // Base horizontal angle for the initial camera-orbit (the other two
+  // components, 90deg elevation and 125% radius, are shared by all models).
+  orbitAngle: string;
+  // Which axis the model's "front/back" (length) runs along once rotated
+  // upright — 'z' for the nozzles scanned lying front-to-back, 'x' for
+  // PitBoss, which was scanned/oriented sideways. Determines how the
+  // measurement overlay's guide lines are positioned.
+  dimensionAxis?: 'x' | 'z';
+  // Small correction when the model's own origin isn't centered on its
+  // diameter axis, so the diameter guide lines line up with the part
+  // instead of its bounding-box center.
+  diameterAxisYOffset?: number;
   // Nominal measurements from the supplied drawing, used to draw the
   // measurement overlay. Omit if a model has not been measured yet.
   dimensions?: {
@@ -49,13 +66,53 @@ interface ModelConfig {
 }
 
 // SKU -> 3D model config. Add an entry here whenever a new interactive
-// 3D model is produced for a product.
+// 3D model is produced for a product (source models + tuned camera/
+// orientation settings live in ~/Desktop/Code/3D Web, outside this repo).
 const MODEL_BY_SKU: Record<string, ModelConfig> = {
   N150ATp: {
+    // Atlas
     src: '/ffs/3d/n150atp.glb',
+    orientation: '0deg 0deg 90deg',
+    orbitAngle: '90deg',
     dimensions: {
       length: { mm: '377', inches: '14.84' },
       height: { mm: '165', inches: '6.5' },
+      diameter: { mm: '76', inches: '3' }
+    }
+  },
+  '001': {
+    // Pitboss
+    src: '/ffs/3d/pitboss.glb',
+    orientation: '0deg 90deg 0deg',
+    orbitAngle: '0deg',
+    dimensionAxis: 'x',
+    diameterAxisYOffset: 0.02957697,
+    dimensions: {
+      length: { mm: '356', inches: '14' },
+      height: { mm: '209', inches: '8.2' },
+      diameter: { mm: '76', inches: '3' }
+    }
+  },
+  '001-3-3': {
+    // SureLoc 150
+    src: '/ffs/3d/sureloc150.glb',
+    orientation: '0deg 0deg 0deg',
+    orbitAngle: '90deg',
+    dimensions: {
+      length: { mm: '445', inches: '17.5' },
+      height: { mm: '209', inches: '8.2' },
+      diameter: { mm: '76', inches: '3' }
+    }
+  },
+  N1000PSLp: {
+    // SureLoc 1000
+    src: '/ffs/3d/sureloc1000.glb',
+    orientation: '180deg 0deg 0deg',
+    orbitAngle: '90deg',
+    diameterAxisYOffset: 0.01817377,
+    dimensions: {
+      length: { mm: '445', inches: '17.5' },
+      height: { mm: '209', inches: '8.2' },
       diameter: { mm: '76', inches: '3' }
     }
   }
@@ -146,13 +203,22 @@ const RulerIcon: React.FC = () => (
 interface Model3DViewerProps {
   src: string;
   alt: string;
+  orientation: string;
+  orbitAngle: string;
+  dimensionAxis?: 'x' | 'z';
+  diameterAxisYOffset?: number;
   dimensions?: ModelConfig['dimensions'];
 }
 
-const DEFAULT_ORBIT = '90deg 90deg 125%';
-const MOBILE_ORBIT = '90deg 90deg 160%';
-
-const Model3DViewer: React.FC<Model3DViewerProps> = ({ src, alt, dimensions }) => {
+const Model3DViewer: React.FC<Model3DViewerProps> = ({
+  src,
+  alt,
+  orientation,
+  orbitAngle,
+  dimensionAxis = 'z',
+  diameterAxisYOffset = 0,
+  dimensions
+}) => {
   const viewerRef = React.useRef<any>(null);
   const overlayRef = React.useRef<SVGSVGElement>(null);
   const toggleRef = React.useRef<HTMLButtonElement>(null);
@@ -162,7 +228,7 @@ const Model3DViewer: React.FC<Model3DViewerProps> = ({ src, alt, dimensions }) =
     const viewer = viewerRef.current;
     if (!viewer) return;
     const mobile = mobileQueryRef.current?.matches;
-    viewer.cameraOrbit = mobile ? MOBILE_ORBIT : DEFAULT_ORBIT;
+    viewer.cameraOrbit = `${orbitAngle} 90deg ${mobile ? '160%' : '125%'}`;
     viewer.cameraTarget = 'auto auto auto';
     viewer.fieldOfView = '30deg';
     if (typeof viewer.resetTurntableRotation === 'function') {
@@ -171,7 +237,7 @@ const Model3DViewer: React.FC<Model3DViewerProps> = ({ src, alt, dimensions }) =
     if (typeof viewer.jumpCameraToGoal === 'function') {
       viewer.jumpCameraToGoal();
     }
-  }, []);
+  }, [orbitAngle]);
 
   React.useEffect(() => {
     const viewer = viewerRef.current;
@@ -259,26 +325,58 @@ const Model3DViewer: React.FC<Model3DViewerProps> = ({ src, alt, dimensions }) =
       const center = viewer.getBoundingBoxCenter();
       const bottom = center.y - size.y / 2;
       const top = center.y + size.y / 2;
-      const front = center.z + size.z / 2;
-      const back = center.z - size.z / 2;
-      addDimension('length', dimensions!.length, [
-        [0, bottom - 0.006, front],
-        [0, bottom - 0.032, front],
-        [0, bottom - 0.032, back],
-        [0, bottom - 0.006, back]
-      ]);
-      addDimension('height', dimensions!.height, [
-        [0, bottom, front + 0.077],
-        [0, bottom, front + 0.102],
-        [0, top, front + 0.102],
-        [0, top, front + 0.077]
-      ]);
-      addDimension('diameter', dimensions!.diameter, [
-        [0, -0.038, front + 0.006],
-        [0, -0.038, front + 0.042],
-        [0, 0.038, front + 0.042],
-        [0, 0.038, front + 0.006]
-      ]);
+      // Hotspots are positioned in the model's own local space, whose
+      // vertical origin already sits on the part's central axis for most
+      // scans — so this stays a small raw offset, not center.y-relative.
+      const axisY = diameterAxisYOffset;
+
+      if (dimensionAxis === 'x') {
+        // PitBoss was scanned/oriented sideways — its length runs along X
+        // (not Z like the other nozzles), so every guide line is built in
+        // the X/Y plane instead, with Z pinned at the model's own center.
+        const front = center.x - size.x / 2;
+        const back = center.x + size.x / 2;
+        const z = center.z;
+        addDimension('length', dimensions!.length, [
+          [front, bottom - 0.006, z],
+          [front, bottom - 0.032, z],
+          [back, bottom - 0.032, z],
+          [back, bottom - 0.006, z]
+        ]);
+        addDimension('height', dimensions!.height, [
+          [front - 0.095, bottom, z],
+          [front - 0.12, bottom, z],
+          [front - 0.12, top, z],
+          [front - 0.095, top, z]
+        ]);
+        addDimension('diameter', dimensions!.diameter, [
+          [front - 0.006, axisY - 0.038, z],
+          [front - 0.042, axisY - 0.038, z],
+          [front - 0.042, axisY + 0.038, z],
+          [front - 0.006, axisY + 0.038, z]
+        ]);
+      } else {
+        const front = center.z + size.z / 2;
+        const back = center.z - size.z / 2;
+        addDimension('length', dimensions!.length, [
+          [0, bottom - 0.006, front],
+          [0, bottom - 0.032, front],
+          [0, bottom - 0.032, back],
+          [0, bottom - 0.006, back]
+        ]);
+        addDimension('height', dimensions!.height, [
+          [0, bottom, front + 0.077],
+          [0, bottom, front + 0.102],
+          [0, top, front + 0.102],
+          [0, top, front + 0.077]
+        ]);
+        addDimension('diameter', dimensions!.diameter, [
+          [0, axisY - 0.038, front + 0.006],
+          [0, axisY - 0.038, front + 0.042],
+          [0, axisY + 0.038, front + 0.042],
+          [0, axisY + 0.038, front + 0.006]
+        ]);
+      }
       toggle!.disabled = false;
       overlay!.removeAttribute('hidden');
       resetView();
@@ -319,7 +417,7 @@ const Model3DViewer: React.FC<Model3DViewerProps> = ({ src, alt, dimensions }) =
         .querySelectorAll('.ffs-gallery__model-anchor')
         .forEach((el: Element) => el.remove());
     };
-  }, [dimensions, resetView]);
+  }, [dimensions, resetView, dimensionAxis, diameterAxisYOffset]);
 
   return (
     <>
@@ -328,12 +426,13 @@ const Model3DViewer: React.FC<Model3DViewerProps> = ({ src, alt, dimensions }) =
           ref={viewerRef as any}
           src={src}
           alt={alt}
+          orientation={orientation}
           camera-controls
           ar
           ar-modes="webxr scene-viewer quick-look"
           shadow-intensity="1"
           exposure="1"
-          camera-orbit={DEFAULT_ORBIT}
+          camera-orbit={`${orbitAngle} 90deg 125%`}
           field-of-view="30deg"
           min-camera-orbit="auto auto 80%"
           max-camera-orbit="auto auto 250%"
@@ -488,6 +587,10 @@ export const Media: React.FC<MediaProps> = ({
               <Model3DViewer
                 src={modelUrl}
                 alt={`Interactive 3D model of ${product.name}`}
+                orientation={model?.orientation ?? '0deg 0deg 0deg'}
+                orbitAngle={model?.orbitAngle ?? '90deg'}
+                dimensionAxis={model?.dimensionAxis}
+                diameterAxisYOffset={model?.diameterAxisYOffset}
                 dimensions={model?.dimensions}
               />
             ) : (
@@ -590,6 +693,10 @@ export const Media: React.FC<MediaProps> = ({
                     <Model3DViewer
                       src={modelUrl}
                       alt={`Interactive 3D model of ${product.name}`}
+                      orientation={model?.orientation ?? '0deg 0deg 0deg'}
+                      orbitAngle={model?.orbitAngle ?? '90deg'}
+                      dimensionAxis={model?.dimensionAxis}
+                      diameterAxisYOffset={model?.diameterAxisYOffset}
                       dimensions={model?.dimensions}
                     />
                   ) : (
