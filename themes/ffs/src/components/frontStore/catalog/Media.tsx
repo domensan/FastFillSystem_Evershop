@@ -2,6 +2,7 @@ import React from 'react';
 import { Image } from '@components/common/Image.js';
 import { ProductNoThumbnail } from '@components/common/ProductNoThumbnail.js';
 import { useProduct } from '@components/frontStore/catalog/ProductContext.js';
+import { _ } from '@evershop/evershop/lib/locale/translate/_';
 import './Media.scss';
 
 declare module 'react' {
@@ -419,11 +420,19 @@ export const Media: React.FC<MediaProps> = ({
   const [mode, setMode] = React.useState<'image' | '3d'>('image');
   const [activeIndex, setActiveIndex] = React.useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = React.useState(false);
-  const modelViewerReady = useModelViewerScript(mode === '3d' && !!modelUrl);
+  const [lightboxMode, setLightboxMode] = React.useState<'image' | '3d'>('image');
+  const modelViewerReady = useModelViewerScript(
+    (mode === '3d' || (isLightboxOpen && lightboxMode === '3d')) && !!modelUrl
+  );
 
   const showImage = (index: number) => {
     setActiveIndex(index);
     setMode('image');
+  };
+
+  const openLightbox = () => {
+    setLightboxMode('image');
+    setIsLightboxOpen(true);
   };
 
   if (images.length === 0 && !modelUrl) {
@@ -488,7 +497,7 @@ export const Media: React.FC<MediaProps> = ({
         ) : (
           <div
             className="ffs-gallery__image"
-            onClick={() => images.length > 0 && setIsLightboxOpen(true)}
+            onClick={() => images.length > 0 && openLightbox()}
           >
             {images.length > 0 ? (
               <Image
@@ -540,43 +549,110 @@ export const Media: React.FC<MediaProps> = ({
             className="ffs-gallery__lightbox-overlay"
             onClick={() => setIsLightboxOpen(false)}
           />
-          <div className="ffs-gallery__lightbox-content">
-            <button
-              type="button"
-              className="ffs-gallery__lightbox-close"
-              aria-label="Close fullscreen view"
-              onClick={() => setIsLightboxOpen(false)}
-            >
-              ×
-            </button>
-            {images.length > 1 && (
+          <div className="ffs-gallery__lightbox-panel">
+            <div className="ffs-gallery__lightbox-header">
+              <div className="ffs-gallery__lightbox-tabs">
+                <button
+                  type="button"
+                  className={`ffs-gallery__lightbox-tab${
+                    lightboxMode === 'image' ? ' ffs-gallery__lightbox-tab--active' : ''
+                  }`}
+                  onClick={() => setLightboxMode('image')}
+                >
+                  {_('Product Images')} ({images.length})
+                </button>
+                {modelUrl && (
+                  <button
+                    type="button"
+                    className={`ffs-gallery__lightbox-tab${
+                      lightboxMode === '3d' ? ' ffs-gallery__lightbox-tab--active' : ''
+                    }`}
+                    onClick={() => setLightboxMode('3d')}
+                  >
+                    {_('3D View')}
+                  </button>
+                )}
+              </div>
               <button
                 type="button"
-                className="ffs-gallery__lightbox-arrow ffs-gallery__lightbox-arrow--prev"
-                aria-label="Previous image"
-                onClick={() =>
-                  setActiveIndex((activeIndex - 1 + images.length) % images.length)
-                }
+                className="ffs-gallery__lightbox-close"
+                aria-label="Close fullscreen view"
+                onClick={() => setIsLightboxOpen(false)}
               >
-                <ChevronIcon direction="left" />
+                ×
               </button>
-            )}
-            <Image
-              src={images[activeIndex].url}
-              alt={images[activeIndex].alt}
-              width={1200}
-              height={1200}
-              objectFit="contain"
-            />
-            {images.length > 1 && (
-              <button
-                type="button"
-                className="ffs-gallery__lightbox-arrow ffs-gallery__lightbox-arrow--next"
-                aria-label="Next image"
-                onClick={() => setActiveIndex((activeIndex + 1) % images.length)}
-              >
-                <ChevronIcon direction="right" />
-              </button>
+            </div>
+
+            <div className="ffs-gallery__lightbox-stage">
+              {lightboxMode === '3d' && modelUrl ? (
+                <div className="ffs-gallery__model">
+                  {modelViewerReady ? (
+                    <Model3DViewer
+                      src={modelUrl}
+                      alt={`Interactive 3D model of ${product.name}`}
+                      dimensions={model?.dimensions}
+                    />
+                  ) : (
+                    <div className="ffs-gallery__model-loading">{_('Loading 3D model…')}</div>
+                  )}
+                </div>
+              ) : (
+                <>
+                  {images.length > 1 && (
+                    <button
+                      type="button"
+                      className="ffs-gallery__lightbox-arrow ffs-gallery__lightbox-arrow--prev"
+                      aria-label="Previous image"
+                      onClick={() =>
+                        setActiveIndex((activeIndex - 1 + images.length) % images.length)
+                      }
+                    >
+                      <ChevronIcon direction="left" />
+                    </button>
+                  )}
+                  <Image
+                    src={images[activeIndex].url}
+                    alt={images[activeIndex].alt}
+                    width={1200}
+                    height={1200}
+                    objectFit="contain"
+                  />
+                  {images.length > 1 && (
+                    <button
+                      type="button"
+                      className="ffs-gallery__lightbox-arrow ffs-gallery__lightbox-arrow--next"
+                      aria-label="Next image"
+                      onClick={() => setActiveIndex((activeIndex + 1) % images.length)}
+                    >
+                      <ChevronIcon direction="right" />
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+
+            {lightboxMode === 'image' && images.length > 1 && (
+              <div className="ffs-gallery__lightbox-thumbs">
+                {images.map((image, index) => (
+                  <button
+                    key={image.url + index}
+                    type="button"
+                    className={`ffs-gallery__lightbox-thumb${
+                      activeIndex === index ? ' ffs-gallery__lightbox-thumb--active' : ''
+                    }`}
+                    onClick={() => setActiveIndex(index)}
+                    aria-label={`${product.name} - image ${index + 1}`}
+                  >
+                    <Image
+                      src={image.url}
+                      alt={image.alt}
+                      width={72}
+                      height={72}
+                      objectFit="contain"
+                    />
+                  </button>
+                ))}
+              </div>
             )}
           </div>
         </div>

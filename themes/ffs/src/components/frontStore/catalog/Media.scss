@@ -276,47 +276,142 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 2rem;
   }
 
   &__lightbox-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.82);
+    background: rgba(20, 22, 26, 0.72);
   }
 
-  &__lightbox-content {
+  &__lightbox-panel {
     position: relative;
     z-index: 1001;
     display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1100px;
+    height: 100%;
+    max-height: 780px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+
+  &__lightbox-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.5rem;
+    border-bottom: 1px solid #eceff1;
+    flex-shrink: 0;
+  }
+
+  &__lightbox-tabs {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  &__lightbox-tab {
+    padding: 0.55rem 1.1rem;
+    border: 1px solid #d7dbde;
+    border-radius: 999px;
+    background: #fff;
+    color: #2b2f33;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      border-color: var(--ffs-blue);
+    }
+
+    &--active {
+      border-color: var(--ffs-blue);
+      color: var(--ffs-blue);
+    }
+  }
+
+  &__lightbox-close {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #2b2f33;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover {
+      background: #f2f3f4;
+    }
+  }
+
+  &__lightbox-stage {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
-    padding: 2.5rem;
+    padding: 1.5rem 4rem;
 
     img {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
     }
+
+    .ffs-gallery__model {
+      width: 100%;
+      height: 100%;
+    }
   }
 
-  &__lightbox-close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    border: none;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
-    font-size: 26px;
-    line-height: 1;
+  &__lightbox-thumbs {
+    display: flex;
+    gap: 0.6rem;
+    padding: 1rem 1.5rem 1.4rem;
+    overflow-x: auto;
+    flex-shrink: 0;
+    border-top: 1px solid #eceff1;
+  }
+
+  &__lightbox-thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    padding: 4px;
+    background: #fff;
+    border: 1px solid #e2e2e2;
+    border-radius: 6px;
     cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
 
     &:hover {
-      background: rgba(255, 255, 255, 0.3);
+      border-color: var(--ffs-blue);
+    }
+
+    &--active {
+      border-color: var(--ffs-blue);
+      border-width: 2px;
+      box-shadow: 0 0 0 1px var(--ffs-blue);
     }
   }
 
@@ -329,23 +424,40 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: none;
+    border: 1px solid #e2e2e2;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.15);
-    color: #fff;
+    background: #fff;
+    color: #2b2f33;
     cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 
     &:hover {
-      background: rgba(255, 255, 255, 0.3);
+      border-color: var(--ffs-blue);
+      color: var(--ffs-blue);
     }
 
     &--prev {
-      left: 16px;
+      left: 12px;
     }
 
     &--next {
-      right: 16px;
+      right: 12px;
     }
+  }
+}
+
+@media (max-width: 640px) {
+  .ffs-gallery__lightbox {
+    padding: 0;
+  }
+
+  .ffs-gallery__lightbox-panel {
+    max-height: 100%;
+    border-radius: 0;
+  }
+
+  .ffs-gallery__lightbox-stage {
+    padding: 1rem 2.75rem;
   }
 }
 

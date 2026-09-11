@@ -49,7 +49,7 @@ export default function FeaturedProducts() {
             <div className="ffs-advantages">
               {advantages.map(([title, text]) => <article key={title}><h3>{_(title)}</h3><p>{_(text)}</p></article>)}
             </div>
-            <a className="ffs-button ffs-button--primary" href="/cart">{_('Get a Quote')}</a>
+            <a className="ffs-button ffs-button--primary" href="/contact#contact-form">{_('Get a Quote')}</a>
           </div>
           <div className="ffs-downtime__image ffs-reveal">
             <img src="/ffs/home/operations.webp" alt="Fast Fill Systems equipment in operation" loading="lazy" />

@@ -94,7 +94,7 @@ export default function About() {
           <p className="ffs-kicker">Fuel Better</p>
           <h2>Upgrade Your Fuel Efficiency Today!</h2>
           <p>Transform your fuel management system with advanced technology and proven industry experience.</p>
-          <a className="ffs-button ffs-button--primary" href="/cart">Get a Quote</a>
+          <a className="ffs-button ffs-button--primary" href="/contact#contact-form">Get a Quote</a>
         </div>
       </section>
     </main>
