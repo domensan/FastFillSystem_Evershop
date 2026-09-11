@@ -15,7 +15,8 @@ const nozzleFamilyRank: Record<string, number> = {
   N150ATp: 0, // Atlas
   '001': 1, // Pitboss
   '001-3-3': 2, // SureLoc 150
-  N1000PSLp: 3 // SureLoc 1000
+  N1000PSLp: 3, // SureLoc 1000
+  '001-3-33': Infinity // Breakaway Coupler AB2 — no product photo yet, keep last
 };
 
 const categoryGroups = {
